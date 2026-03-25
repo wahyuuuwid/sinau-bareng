@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 
 class ForgotPasswordController extends Controller
 {
@@ -18,8 +19,11 @@ class ForgotPasswordController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        // Nanti di sini logikanya: Cek user -> Bikin Token -> Kirim Email
-        // Untuk sekarang kita kasih feedback sukses dulu biar UI-nya kelihatan jalan
-        return back()->with('status', 'Kami telah mengirimkan link reset ke email kamu!');
+        // Ini perintah saktinya
+        $status = Password::sendResetLink($request->only('email'));
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('status', 'Berhasil! Cek Mailtrap.')
+            : back()->withErrors(['email' => __($status)]);
     }
 }
