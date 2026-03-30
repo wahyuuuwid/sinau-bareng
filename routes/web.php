@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\MateriController;
 
 
 Route::get('/', function () {
@@ -75,3 +76,19 @@ Route::get('materi/unggah', function() {
 Route::get('materi/saya', function() {
     return view('pages.user.materi.mine'); 
     });
+
+
+
+Route::middleware(['auth'])->group(function () {
+    // 1. Halaman Daftar "Materi Saya" (Nampilin Tabel)
+    Route::get('materi/saya', [MateriController::class, 'index'])->name('materi.index');
+
+    // 2. Halaman Form "Unggah Materi" (Nampilin Inputan)
+    Route::get('materi/unggah', function() { 
+        return view('pages.user.materi.create'); 
+    })->name('materi.create');
+
+    // 3. Proses Simpan ke Database (Action dari Form)
+    Route::post('materi/unggah', [MateriController::class, 'store'])->name('materi.store');
+});
+
