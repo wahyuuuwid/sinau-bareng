@@ -6,6 +6,7 @@ use App\Http\Controllers\MateriController;
 use App\Http\Controllers\DashboardUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\AIController;
 
 // 1. GUEST ROUTES (Bisa diakses tanpa login)
 Route::get('/', function () {
@@ -47,12 +48,14 @@ Route::middleware(['auth'])->group(function () {
 
         // MATERI
         Route::get('/materi', function() { return view('pages.user.materi'); })->name('materi.index');
-        Route::get('/materi/cari', function() { return view('pages.user.materi.index'); })->name('materi.cari');
+        Route::get('/materi/cari', [MateriController::class, 'cari'])->name('materi.cari');
         Route::get('/materi/saya', [MateriController::class, 'index'])->name('materi.index');
         Route::get('/materi/unggah', function() { return view('pages.user.materi.create'); })->name('materi.create');
         Route::post('/materi/unggah', [MateriController::class, 'store'])->name('materi.store');
 
         // GENERATE SOAL
         Route::get('/generate', function () { return view('pages.user.generate'); })->name('generate');
+
+        Route::post('/generate-soal', [AIController::class, 'generateSoal'])->name('soal.generate');
     });
 });

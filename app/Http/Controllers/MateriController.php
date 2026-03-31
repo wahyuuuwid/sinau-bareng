@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Materi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class MateriController extends Controller
@@ -37,5 +38,15 @@ class MateriController extends Controller
         ]);
 
         return redirect('/materi/saya')->with('success', 'Materi berhasil diunggah!');
+    }
+
+    public function cari(Request $request)
+    {
+    $materis = Materi::where('judul_materi', 'like', '%' . $request->cari . '%')->get();
+
+    $listMatkul = Materi::select('mata_kuliah')->distinct()->get();
+    $listDosen = Materi::select('user_id')->distinct()->with('user')->get(); 
+
+    return view('pages.user.materi.index', compact('materis', 'listMatkul', 'listDosen'));
     }
 }

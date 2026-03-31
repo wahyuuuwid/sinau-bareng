@@ -33,13 +33,13 @@
             {{-- Anak-anak Menu Materi --}}
             <div x-show="openMateri" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 transform scale-95" class="pl-14 space-y-2 mt-1">
                 <a href="/materi/cari" class="block py-2 text-sm {{ request()->is('materi/cari') ? 'text-yellow-400 font-bold' : 'text-indigo-100 hover:text-white' }}">
-                    • Cari & Unduh
+                    Cari & Unduh
                 </a>
                 <a href="/materi/unggah" class="block py-2 text-sm {{ request()->is('materi/unggah') ? 'text-yellow-400 font-bold' : 'text-indigo-100 hover:text-white' }}">
-                    • Unggah Materi
+                    Unggah Materi
                 </a>
                 <a href="/materi/saya" class="block py-2 text-sm {{ request()->is('materi/saya') ? 'text-yellow-400 font-bold' : 'text-indigo-100 hover:text-white' }}">
-                    • Materi Saya
+                    Materi Saya
                 </a>
             </div>
         </div>
