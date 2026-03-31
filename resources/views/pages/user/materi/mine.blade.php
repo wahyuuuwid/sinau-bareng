@@ -7,6 +7,17 @@
     <div class="flex-1 p-10">
         <h1 class="text-3xl font-bold text-black mb-8">Materi > Materi Saya</h1>
 
+
+        @if(session('success'))
+            <div class="bg-green-500 text-white p-4 rounded-xl mb-6 shadow-lg flex items-center gap-3 animate-fade-in-down">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="font-bold">{{ session('success') }}</span>
+            </div>
+        @endif
+
+
         {{-- Filter Bar --}}
         <div class="flex items-center gap-4 mb-8">
             <div class="relative flex-1 max-w-md shadow-sm rounded-xl overflow-hidden">

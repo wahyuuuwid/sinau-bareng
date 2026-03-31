@@ -14,22 +14,20 @@
             <div class="bg-white p-8 rounded-[30px] shadow-sm mb-10 border border-gray-100 text-left">
                 <h3 class="text-2xl font-bold mb-4 text-center">Materi Populer Minggu Ini</h3>
                 <ul class="inline-block text-left space-y-2">
-                    <li class="flex items-center gap-3 text-indigo-600 font-medium">
-                        <span class="w-2 h-2 bg-indigo-600 rounded-full"></span> Analisis Perancangan P...
-                    </li>
-                    <li class="flex items-center gap-3 text-indigo-600 font-medium">
-                        <span class="w-2 h-2 bg-indigo-600 rounded-full"></span> Bahasa Jawa
-                    </li>
-                    <li class="flex items-center gap-3 text-indigo-600 font-medium">
-                        <span class="w-2 h-2 bg-indigo-600 rounded-full"></span> Sistem Operasi
-                    </li>
+                    @forelse($materiTerbaru as $materi)
+                        <li class="flex items-center gap-3 text-indigo-600 font-medium">
+                            <span class="w-2 h-2 bg-indigo-600 rounded-full"></span> {{ Str::limit($materi->judul_materi, 20) }}
+                        </li>
+                    @empty
+                        <li class="text-gray-400 italic text-sm">Belum ada materi diunggah</li>
+                    @endforelse
                 </ul>
             </div>
 
             <div class="grid grid-cols-2 gap-10">
                 <div class="bg-white p-10 rounded-[40px] shadow-sm text-center">
                     <p class="text-2xl font-bold text-black mb-2">Total Materi</p>
-                    <p class="text-4xl font-bold text-indigo-500">18</p>
+                    <p class="text-4xl font-bold text-indigo-500">{{ $totalMateri }}</p>
                 </div>
 
                 <div class="bg-white p-10 rounded-[40px] shadow-sm text-center">
