@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/materi', function() { return view('pages.user.materi'); })->name('materi.index');
         Route::get('/materi/cari', [MateriController::class, 'cari'])->name('materi.cari');
         Route::get('/materi/saya', [MateriController::class, 'index'])->name('materi.index');
-        Route::get('/materi/unggah', function() { return view('pages.user.materi.create'); })->name('materi.create');
+        Route::get('/materi/unggah', [MateriController::class, 'create'])->name('materi.create');
         Route::post('/materi/unggah', [MateriController::class, 'store'])->name('materi.store');
 
         // GENERATE SOAL
@@ -58,4 +58,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/generate-soal', [AIController::class, 'generateSoal'])->name('soal.generate');
     });
+
+    // MATERI
+    Route::get('/get-dosen/{id}', [MateriController::class, 'getDosenByMk'])->name('get.dosen');
 });

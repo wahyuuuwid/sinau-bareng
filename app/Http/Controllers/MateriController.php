@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\MataKuliah;
 use App\Models\Materi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,11 +17,19 @@ class MateriController extends Controller
         return view('pages.user.materi.mine', compact('materis'));
     }
 
+    public function create()
+{
+    $mataKuliah= MataKuliah::all();
+    return view('pages.user.materi.create', compact('mataKuliah'));
+}
+
+
     // Proses Simpan (Unggah)
     public function store(Request $request)
     {
         $request->validate([
             'mata_kuliah' => 'required',
+            'dosen_id' => 'required',
             'judul_materi' => 'required',
             'file_materi' => 'required|mimes:pdf,docx,txt|max:20480', // Maks 20 MB
         ]);
@@ -48,5 +57,21 @@ class MateriController extends Controller
     $listDosen = Materi::select('user_id')->distinct()->with('user')->get(); 
 
     return view('pages.user.materi.index', compact('materis', 'listMatkul', 'listDosen'));
+    }
+
+    public function getDosenByMk($id)
+    {
+        //Cari Mata Kuliah berdasarkan ID
+        $mataKuliah = MataKuliah::find($id);
+
+        if (!$mataKuliah) {
+            return response()->json([]); 
+        }
+
+        // Ambil data dosen yang berelasi dengan MK ini
+        $dosens = $mataKuliah->dosens()->get(['users.id', 'users.username']);
+
+        //Kembalikan dalam format JSON
+        return response()->json($dosens);
     }
 }
