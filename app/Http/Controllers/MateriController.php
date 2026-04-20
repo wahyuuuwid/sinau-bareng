@@ -26,28 +26,30 @@ class MateriController extends Controller
 
     // Proses Simpan (Unggah)
     public function store(Request $request)
-    {
-        $request->validate([
-            'mata_kuliah' => 'required',
-            'dosen_id' => 'required',
-            'judul_materi' => 'required',
-            'file_materi' => 'required|mimes:pdf,docx,txt|max:20480', // Maks 20 MB
-        ]);
+{
+    $request->validate([
+        'mata_kuliah_id' => 'required|exists:mata_kuliahs,id', // Ganti nama inputnya
+        'dosen_id'       => 'required|exists:users,id',       // Ganti nama inputnya
+        'judul_materi'   => 'required',
+        'file_materi'    => 'required|mimes:pdf,docx,txt|max:20480',
+    ]);
 
-        // Simpan file ke folder storage/app/public/materi
-        $path = $request->file('file_materi')->store('materi', 'public');
+    // Simpan file ke storage
+    $path = $request->file('file_materi')->store('materi', 'public');
 
-        Materi::create([
-            'mata_kuliah' => $request->mata_kuliah,
-            'judul_materi' => $request->judul_materi,
-            'deskripsi' => $request->deskripsi,
-            'file_path' => $path,
-            'tahun' => date('Y'),
-            'user_id' => Auth::id(),
-        ]);
+    // Pastikan key di bawah ini SAMA PERSIS dengan $fillable di Model
+    Materi::create([
+        'mata_kuliah_id' => $request->mata_kuliah_id, 
+        'dosen_id'       => $request->dosen_id,       
+        'judul_materi'   => $request->judul_materi,
+        'deskripsi'      => $request->deskripsi,
+        'file_path'      => $path,
+        'tahun'          => date('Y'),
+        'user_id'        => Auth::id(),
+    ]);
 
-        return redirect('/materi/saya')->with('success', 'Materi berhasil diunggah!');
-    }
+    return redirect('/materi/saya')->with('success', 'Materi berhasil diunggah!');
+}
 
     public function cari(Request $request)
     {
