@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Materi extends Model
 {
     protected $fillable = [
-        'mata_kuliah_id', // Ini baru
-        'dosen_id',       // Ini baru
+        'mata_kuliah_id', 
+        'dosen_id',       
         'judul_materi', 
         'deskripsi', 
         'file_path', 
         'tahun', 
+        'status', 
         'user_id'
     ];
 

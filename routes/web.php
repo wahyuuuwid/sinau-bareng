@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\AIController;
+use App\Http\Controllers\DosenController;
 
 // 1. GUEST ROUTES (Bisa diakses tanpa login)
 Route::get('/', function () {
@@ -37,13 +38,17 @@ Route::middleware(['auth'])->group(function () {
 
     // ROLE: DOSEN
     Route::middleware(['role:dosen'])->group(function () {
-        Route::get('/dosen', function () { return view('pages.dosen.dashboard'); });
+        Route::get('/dosen', [DosenController::class, 'index'])->name('dosen.dashboard');
+        Route::get('/dosen/validasi-materi', [DosenController::class, 'validasiMateri'])->name('dosen.validasi');
+
+
+        Route::get('/dosen/materi/{id}', [DosenController::class, 'showMateri'])->name('dosen.materi.show');
+        Route::patch('/dosen/materi/{id}/update', [DosenController::class, 'updateStatus'])->name('dosen.materi.update');
     });
 
     // ROLE: USER/MAHASISWA
     Route::middleware(['role:user'])->group(function () {
         
-        // DASHBOARD (Sekarang sudah lewat Controller!)
         Route::get('/user', [DashboardUserController::class, 'index'])->name('user.dashboard');
 
         // MATERI

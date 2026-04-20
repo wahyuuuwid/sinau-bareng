@@ -24,8 +24,8 @@ class MateriController extends Controller
 }
 
 
-    // Proses Simpan (Unggah)
     public function store(Request $request)
+<<<<<<< Updated upstream
     {
         $request->validate([
             'mata_kuliah' => 'required',
@@ -45,6 +45,29 @@ class MateriController extends Controller
             'tahun' => date('Y'),
             'user_id' => Auth::id(),
         ]);
+=======
+{
+    $request->validate([
+        'mata_kuliah_id' => 'required|exists:mata_kuliahs,id', 
+        'dosen_id'       => 'required|exists:users,id',    
+        'judul_materi'   => 'required',
+        'file_materi'    => 'required|mimes:pdf,docx,txt|max:20480',
+    ]);
+
+
+    $path = $request->file('file_materi')->store('materi', 'public');
+
+
+    Materi::create([
+        'mata_kuliah_id' => $request->mata_kuliah_id, 
+        'dosen_id'       => $request->dosen_id,       
+        'judul_materi'   => $request->judul_materi,
+        'deskripsi'      => $request->deskripsi,
+        'file_path'      => $path,
+        'tahun'          => date('Y'),
+        'user_id'        => Auth::id(),
+    ]);
+>>>>>>> Stashed changes
 
         return redirect('/materi/saya')->with('success', 'Materi berhasil diunggah!');
     }
