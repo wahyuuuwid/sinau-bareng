@@ -34,8 +34,20 @@ class MateriController extends Controller
         'file_materi'    => 'required|mimes:pdf,docx,txt|max:20480',
     ]);
 
-    // Simpan file ke storage
-    $path = $request->file('file_materi')->store('materi', 'public');
+    // Ambil file asli
+    $file = $request->file('file_materi');
+    
+    // Buat nama file baru (misal: judul_materi_nama_asli.pdf)
+    // Hapus spasi dan karakter aneh dari judul materi
+    $cleanJudul = preg_replace('/[^a-zA-Z0-9]/', '_', $request->judul_materi);
+    $namaAsli = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+    $extension = $file->getClientOriginalExtension();
+    
+    // Contoh nama: Judul_Materi_Nama_File_Asli_timestamp.pdf
+    $namaFile = $cleanJudul . '_' . $namaAsli . '_' . time() . '.' . $extension;
+    
+    // Simpan dengan nama yang sudah ditentukan
+    $path = $file->storeAs('materi', $namaFile, 'public');
 
     // Pastikan key di bawah ini SAMA PERSIS dengan $fillable di Model
     Materi::create([
