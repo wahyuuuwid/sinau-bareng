@@ -8,12 +8,12 @@
     <div class="flex-1 p-10">
         <h1 class="text-3xl font-bold text-black mb-10">Materi > Unggah Materi</h1>
 
-
         @if ($errors->has('file_materi'))
             <div class="bg-red-500 text-white p-3 rounded-lg mb-4 text-sm font-bold">
-                ⚠ Wah kegedean, Dzaki! {{ $errors->first('file_materi') }}
+                ⚠ Wah kegedean, size filenya terlalu besar! {{ $errors->first('file_materi') }}
             </div>
         @endif
+
         <form action="{{ route('materi.store') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
             @csrf
 
@@ -28,7 +28,7 @@
                     </div>
                     
                     <div id="file_preview" class="hidden flex items-center gap-3 border-2 border-dashed border-[#6155F5] rounded-xl p-3 pr-10 relative bg-indigo-50">
-                        <div class="bg-red-500 text-white p-2 rounded-lg font-bold text-xs shadow-sm">PDF</div>
+                        <div class="bg-red-500 text-white p-2 rounded-lg font-bold text-xs shadow-sm">FILE</div>
                         <div class="flex flex-col">
                             <span id="file_name" class="text-sm font-bold text-gray-800 truncate max-w-[200px]">Nama_File.pdf</span>
                             <span id="file_size" class="text-[10px] text-gray-500 font-medium">0 KB</span>
@@ -40,10 +40,27 @@
                 </div>
 
                 <div class="space-y-4">
+                    {{-- DROPDOWN MATA KULIAH --}}
                     <div class="flex items-center gap-4">
                         <label class="w-40 font-bold text-sm text-gray-700">Mata Kuliah<span class="text-red-500">*</span> :</label>
-                        <input type="text" name="mata_kuliah" placeholder="Contoh: Analisis Perancangan Perangkat Lunak" required
-                            class="flex-1 bg-white p-3 rounded-lg shadow-sm border border-transparent focus:border-[#6155F5] outline-none font-semibold text-gray-600 transition-all">
+                        <select name="mata_kuliah_id" id="mata_kuliah_id" required
+                            class="flex-1 bg-white p-3 rounded-lg shadow-sm border border-transparent focus:border-[#6155F5] outline-none font-semibold text-gray-600 transition-all cursor-pointer">
+                            <option value="" disabled selected>Pilih Mata Kuliah</option>
+                            @if(isset($mataKuliah) && $mataKuliah->count() > 0)
+                                @foreach($mataKuliah as $mk)
+                                    <option value="{{ $mk->id }}">{{ $mk->nama_mk }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
+                    {{-- DROPDOWN DOSEN PENGAMPU --}}
+                    <div class="flex items-center gap-4">
+                        <label class="w-40 font-bold text-sm text-gray-700">Dosen Pengampu<span class="text-red-500">*</span> :</label>
+                        <select name="dosen_id" id="dosen_id" required disabled
+                            class="flex-1 bg-gray-100 p-3 rounded-lg shadow-sm border border-transparent focus:border-[#6155F5] outline-none font-semibold text-gray-500 transition-all cursor-not-allowed">
+                            <option value="" disabled selected>Pilih Mata Kuliah terlebih dahulu</option>
+                        </select>
                     </div>
                     
                     <div class="flex items-center gap-4">
@@ -78,40 +95,68 @@
     </div>
 </div>
 
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // === LOGIKA FILE PREVIEW ===
         const fileInput = document.getElementById('file_materi');
         const filePreview = document.getElementById('file_preview');
         const fileNameDisplay = document.getElementById('file_name');
         const fileSizeDisplay = document.getElementById('file_size');
         const removeBtn = document.getElementById('remove_file');
 
-        // 1. Munculkan preview saat file dipilih
         fileInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 const file = this.files[0];
-                
-                // Set Nama File
                 fileNameDisplay.innerText = file.name;
-                
-                // Hitung Size (KB/MB)
                 const sizeInKb = (file.size / 1024).toFixed(1);
-                fileSizeDisplay.innerText = sizeInKb > 1024 
-                    ? (sizeInKb / 1024).toFixed(1) + ' MB' 
-                    : sizeInKb + ' KB';
-
-                // Tampilkan Kotak Preview
+                fileSizeDisplay.innerText = sizeInKb > 1024 ? (sizeInKb / 1024).toFixed(1) + ' MB' : sizeInKb + ' KB';
                 filePreview.classList.remove('hidden');
                 filePreview.classList.add('flex');
             }
         });
 
-        // 2. Sembunyikan preview saat tombol X diklik
         removeBtn.addEventListener('click', function() {
-            fileInput.value = ""; // Reset input file
+            fileInput.value = ""; 
             filePreview.classList.add('hidden');
             filePreview.classList.remove('flex');
+        });
+
+        // === LOGIKA DEPENDENT DROPDOWN (Mata Kuliah -> Dosen) ===
+        const mkSelect = document.getElementById('mata_kuliah_id');
+        const dosenSelect = document.getElementById('dosen_id');
+
+        mkSelect.addEventListener('change', function() {
+            const mkId = this.value;
+
+            // Bikin tampilan loading dulu
+            dosenSelect.innerHTML = '<option value="" disabled selected>Sedang mencari dosen...</option>';
+            dosenSelect.disabled = true;
+            dosenSelect.classList.add('bg-gray-100', 'cursor-not-allowed');
+            dosenSelect.classList.remove('bg-white', 'cursor-pointer');
+
+            // Ambil data dari API
+            fetch(`/get-dosen/${mkId}`)
+                .then(response => response.json())
+                .then(data => {
+                    dosenSelect.innerHTML = '<option value="" disabled selected>-- Pilih Dosen --</option>';
+                    
+                    if(data.length > 0) {
+                        data.forEach(dosen => {
+                            // Masukin nama dosen ke dropdown
+                            dosenSelect.innerHTML += `<option value="${dosen.id}">${dosen.username}</option>`; 
+                        });
+                        // Buka dropdown
+                        dosenSelect.disabled = false;
+                        dosenSelect.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                        dosenSelect.classList.add('bg-white', 'cursor-pointer');
+                    } else {
+                        dosenSelect.innerHTML = '<option value="" disabled selected>Belum ada dosen untuk MK ini</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching dosen:', error);
+                    dosenSelect.innerHTML = '<option value="" disabled selected>Gagal memuat data dosen</option>';
+                });
         });
     });
 </script>

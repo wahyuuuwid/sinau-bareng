@@ -45,4 +45,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function mataKuliahs()
+    {
+        return $this->belongsToMany(
+            MataKuliah::class, 
+            'dosen_mata_kuliah', // Nama tabel pivot
+            'dosen_id',          // Foreign key diri sendiri
+            'mata_kuliah_id'     // Foreign key tujuan
+        );
+    }
 }

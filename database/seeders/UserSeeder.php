@@ -28,6 +28,28 @@ class UserSeeder extends Seeder
             'role' => 'dosen'
         ]);
 
+        //Dosen Real
+        User::create([
+            'username' => 'Pak Anggi',
+            'email' => 'anggi@gmail.com',
+            'password' => Hash::make('123456'),
+            'role' => 'dosen'
+        ]);
+
+        User::create([
+            'username' => 'Bu Lisda',
+            'email' => 'lisda@gmail.com',
+            'password' => Hash::make('123456'),
+            'role' => 'dosen'
+        ]);
+
+        User::create([
+            'username' => 'Pak Rusdi',
+            'email' => 'rusdi@gmail.com',
+            'password' => Hash::make('123456'),
+            'role' => 'dosen'
+        ]);
+
 
         User::Create([
             'username' => 'user',
