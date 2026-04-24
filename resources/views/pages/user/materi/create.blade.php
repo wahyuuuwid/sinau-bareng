@@ -8,9 +8,13 @@
     <div class="flex-1 p-10">
         <h1 class="text-3xl font-bold text-black mb-10">Materi > Unggah Materi</h1>
 
-        @if ($errors->has('file_materi'))
+        @if ($errors->any())
             <div class="bg-red-500 text-white p-3 rounded-lg mb-4 text-sm font-bold">
-                ⚠ Wah kegedean, size filenya terlalu besar! {{ $errors->first('file_materi') }}
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>⚠ {{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
@@ -18,6 +22,7 @@
             @csrf
 
             <div class="max-w-4xl space-y-6">
+                {{-- FILE UPLOAD SECTION --}}
                 <div class="bg-white p-8 rounded-2xl shadow-sm flex gap-8 items-center border border-gray-100">
                     <div class="text-center">
                         <label class="block bg-gray-200 px-10 py-2 rounded-lg font-bold cursor-pointer hover:bg-gray-300 transition-colors">
@@ -40,27 +45,27 @@
                 </div>
 
                 <div class="space-y-4">
-                    {{-- DROPDOWN MATA KULIAH --}}
+                    {{-- DROPDOWN MATA KULIAH (SEARCHABLE) --}}
                     <div class="flex items-center gap-4">
                         <label class="w-40 font-bold text-sm text-gray-700">Mata Kuliah<span class="text-red-500">*</span> :</label>
-                        <select name="mata_kuliah_id" id="mata_kuliah_id" required
-                            class="flex-1 bg-white p-3 rounded-lg shadow-sm border border-transparent focus:border-[#6155F5] outline-none font-semibold text-gray-600 transition-all cursor-pointer">
-                            <option value="" disabled selected>Pilih Mata Kuliah</option>
-                            @if(isset($mataKuliah) && $mataKuliah->count() > 0)
+                        <div class="flex-1">
+                            <select name="mata_kuliah_id" id="mata_kuliah_id" required placeholder="Cari Mata Kuliah...">
+                                <option value="" disabled selected>Pilih Mata Kuliah</option>
                                 @foreach($mataKuliah as $mk)
                                     <option value="{{ $mk->id }}">{{ $mk->nama_mk }}</option>
                                 @endforeach
-                            @endif
-                        </select>
+                            </select>
+                        </div>
                     </div>
 
-                    {{-- DROPDOWN DOSEN PENGAMPU --}}
+                    {{-- DROPDOWN DOSEN PENGAMPU (SEARCHABLE & DEPENDENT) --}}
                     <div class="flex items-center gap-4">
                         <label class="w-40 font-bold text-sm text-gray-700">Dosen Pengampu<span class="text-red-500">*</span> :</label>
-                        <select name="dosen_id" id="dosen_id" required disabled
-                            class="flex-1 bg-gray-100 p-3 rounded-lg shadow-sm border border-transparent focus:border-[#6155F5] outline-none font-semibold text-gray-500 transition-all cursor-not-allowed">
-                            <option value="" disabled selected>Pilih Mata Kuliah terlebih dahulu</option>
-                        </select>
+                        <div class="flex-1">
+                            <select name="dosen_id" id="dosen_id" required placeholder="Pilih Mata Kuliah terlebih dahulu">
+                                <option value="" disabled selected>Pilih Mata Kuliah terlebih dahulu</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="flex items-center gap-4">
@@ -97,7 +102,19 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // === LOGIKA FILE PREVIEW ===
+        // --- INITIALIZE TOM SELECT ---
+        const tsMK = new TomSelect("#mata_kuliah_id", {
+            create: false,
+            sortField: { field: "text", direction: "asc" }
+        });
+
+        const tsDosen = new TomSelect("#dosen_id", {
+            create: false,
+            sortField: { field: "text", direction: "asc" }
+        });
+        tsDosen.disable();
+
+        // --- FILE PREVIEW LOGIC ---
         const fileInput = document.getElementById('file_materi');
         const filePreview = document.getElementById('file_preview');
         const fileNameDisplay = document.getElementById('file_name');
@@ -121,41 +138,33 @@
             filePreview.classList.remove('flex');
         });
 
-        // === LOGIKA DEPENDENT DROPDOWN (Mata Kuliah -> Dosen) ===
-        const mkSelect = document.getElementById('mata_kuliah_id');
-        const dosenSelect = document.getElementById('dosen_id');
+        // --- DEPENDENT DROPDOWN WITH TOM SELECT ---
+        tsMK.on('change', function(value) {
+            if (!value) return;
 
-        mkSelect.addEventListener('change', function() {
-            const mkId = this.value;
+            // Reset Dosen Select
+            tsDosen.clear();
+            tsDosen.clearOptions();
+            tsDosen.setTextboxValue('Sedang mencari dosen...');
 
-            // Bikin tampilan loading dulu
-            dosenSelect.innerHTML = '<option value="" disabled selected>Sedang mencari dosen...</option>';
-            dosenSelect.disabled = true;
-            dosenSelect.classList.add('bg-gray-100', 'cursor-not-allowed');
-            dosenSelect.classList.remove('bg-white', 'cursor-pointer');
-
-            // Ambil data dari API
-            fetch(`/get-dosen/${mkId}`)
+            fetch(`/get-dosen/${value}`)
                 .then(response => response.json())
                 .then(data => {
-                    dosenSelect.innerHTML = '<option value="" disabled selected>-- Pilih Dosen --</option>';
+                    tsDosen.clearOptions();
                     
                     if(data.length > 0) {
                         data.forEach(dosen => {
-                            // Masukin nama dosen ke dropdown
-                            dosenSelect.innerHTML += `<option value="${dosen.id}">${dosen.username}</option>`; 
+                            tsDosen.addOption({value: dosen.id, text: dosen.username});
                         });
-                        // Buka dropdown
-                        dosenSelect.disabled = false;
-                        dosenSelect.classList.remove('bg-gray-100', 'cursor-not-allowed');
-                        dosenSelect.classList.add('bg-white', 'cursor-pointer');
+                        tsDosen.enable();
+                        tsDosen.setTextboxValue('');
                     } else {
-                        dosenSelect.innerHTML = '<option value="" disabled selected>Belum ada dosen untuk MK ini</option>';
+                        tsDosen.disable();
+                        tsDosen.setTextboxValue('Belum ada dosen untuk MK ini');
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching dosen:', error);
-                    dosenSelect.innerHTML = '<option value="" disabled selected>Gagal memuat data dosen</option>';
+                    console.error('Error:', error);
                 });
         });
     });
