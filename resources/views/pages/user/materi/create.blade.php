@@ -10,7 +10,7 @@
 
         @if ($errors->has('file_materi'))
             <div class="bg-red-500 text-white p-3 rounded-lg mb-4 text-sm font-bold">
-                ⚠ Wah kegedean, Dzaki! {{ $errors->first('file_materi') }}
+                ⚠ Wah kegedean, size filenya terlalu besar! {{ $errors->first('file_materi') }}
             </div>
         @endif
 

@@ -2,11 +2,11 @@
 
 @section('content')
 <div class="flex min-h-screen bg-[#E5E5E5]">
+    {{-- Sidebar User --}}
     @include('components.layout.sidebar_user')
 
     <div class="flex-1 p-10">
         <h1 class="text-3xl font-bold text-black mb-8">Materi > Materi Saya</h1>
-
 
         @if(session('success'))
             <div class="bg-green-500 text-white p-4 rounded-xl mb-6 shadow-lg flex items-center gap-3 animate-fade-in-down">
@@ -16,7 +16,6 @@
                 <span class="font-bold">{{ session('success') }}</span>
             </div>
         @endif
-
 
         {{-- Filter Bar --}}
         <div class="flex items-center gap-4 mb-8">
@@ -65,8 +64,13 @@
                         <tr class="border-b {{ $index % 2 == 1 ? 'bg-[#EFEEFF]' : 'bg-white' }}">
                             <td class="py-4">{{ $index + 1 }}.</td>
                             <td>{{ $materi->judul_materi }}</td>
-                            <td>{{ $materi->mata_kuliah }}</td>
-                            <td>{{ auth()->user()->username }}</td> {{-- Mengambil nama pengunggah --}}
+
+                            {{--Memanggil nama Mata Kuliah  --}}
+                            <td>{{ $materi->mataKuliah->nama_mk ?? 'Tidak Ada Matkul' }}</td>
+
+                            {{--Memanggil nama Dosen Pengampu --}}
+                            <td>{{ $materi->dosen->username ?? 'Tidak Ada Dosen' }}</td>
+
                             <td>{{ $materi->tahun }}</td>
                             <td>
                                 <div class="flex justify-center gap-3 items-center">
@@ -86,7 +90,7 @@
         </div>
 
         <button onclick="window.location.href='/materi'"
-        class="mt-12 bg-white px-8 py-2 rounded-lg shadow-sm flex items-center gap-3 font-bold text-sm hover:bg-gray-50 transition-all border border-gray-100">
+        class="mt-12 bg-white px-8 py-2 rounded-lg shadow-sm flex items-center gap-3 font-bold text-sm hover:bg-gray-50 transition-all border border-gray-100 text-gray-600">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             Kembali
         </button>
