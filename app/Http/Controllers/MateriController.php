@@ -64,14 +64,22 @@ class MateriController extends Controller
 }
 
     public function cari(Request $request)
-    {
+{
     $materis = Materi::where('judul_materi', 'like', '%' . $request->cari . '%')->get();
 
-    $listMatkul = Materi::select('mata_kuliah')->distinct()->get();
-    $listDosen = Materi::select('user_id')->distinct()->with('user')->get(); 
+    $listMatkul = Materi::select('mata_kuliah_id')
+        ->distinct()
+        ->with('mataKuliah') 
+        ->get();
+
+    
+    $listDosen = Materi::select('dosen_id')
+        ->distinct()
+        ->with('dosen') 
+        ->get(); 
 
     return view('pages.user.materi.index', compact('materis', 'listMatkul', 'listDosen'));
-    }
+}
 
     public function getDosenByMk($id)
     {
