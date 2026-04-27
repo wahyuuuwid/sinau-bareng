@@ -8,7 +8,7 @@
                 </a>
             </div>
 
-            <div class="hidden md:flex flex-1 max-w-md mx-8">
+            <!-- <div class="hidden md:flex flex-1 max-w-md mx-8">
                 <div class="relative w-full text-indigo-600">
                     <input 
                         type="text" 
@@ -22,11 +22,11 @@
                         Cari
                     </button>
                 </div>
-            </div>
+            </div> -->
 
             <div class="hidden md:flex items-center gap-4 text-indigo-600">
                 <div class="relative group">
-                    <button class="flex items-center gap-1 text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">
+                    <!-- <button class="flex items-center gap-1 text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">
                         <span>Explore</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -35,11 +35,13 @@
                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">Bank Soal</a>
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">Materi</a>
-                    </div>
+                    </div> -->
                 </div>
 
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Beranda</a>
                 <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">AI Tools</a>
                 <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Tentang</a>
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Hubungi Kami</a>
 
                 <div class="h-6 w-px bg-gray-300 mx-2"></div>
 
