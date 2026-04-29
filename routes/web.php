@@ -49,7 +49,7 @@ Route::middleware(['auth'])->group(function () {
     // ROLE: USER/MAHASISWA
     Route::middleware(['role:user'])->group(function () {
         
-        Route::get('/user', [DashboardUserController::class, 'index'])->name('user.dashboard');
+        Route::get('/student/dashboard', [DashboardUserController::class, 'index'])->name('user.dashboard');
 
         // MATERI
         Route::get('/materi', function() { return view('pages.user.materi'); })->name('materi.index');
