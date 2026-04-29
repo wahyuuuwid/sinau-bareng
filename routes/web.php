@@ -13,8 +13,8 @@ Route::get('/', function () {
     return view('homepage');
 });
 
-Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
-Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
+Route::get('/auth/login', [AuthController::class, 'loginForm'])->name('login');
+Route::get('/auth/register', [AuthController::class, 'registerForm'])->name('register');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
@@ -44,17 +44,17 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:user'])->group(function () {
         
         // DASHBOARD (Sekarang sudah lewat Controller!)
-        Route::get('/user', [DashboardUserController::class, 'index'])->name('user.dashboard');
+        Route::get('/student/dashboard', [DashboardUserController::class, 'index'])->name('user.dashboard');
 
         // MATERI
-        Route::get('/materi', function() { return view('pages.user.materi'); })->name('materi.index');
-        Route::get('/materi/cari', [MateriController::class, 'cari'])->name('materi.cari');
-        Route::get('/materi/saya', [MateriController::class, 'index'])->name('materi.index');
-        Route::get('/materi/unggah', [MateriController::class, 'create'])->name('materi.create');
-        Route::post('/materi/unggah', [MateriController::class, 'store'])->name('materi.store');
+        // Route::get('/materi', function() { return view('pages.user.materi'); })->name('materi.index');
+        Route::get('/student/materi/cari', [MateriController::class, 'cari'])->name('materi.cari');
+        Route::get('/student/materi/saya', [MateriController::class, 'index'])->name('materi.index');
+        Route::get('/student/materi/unggah', [MateriController::class, 'create'])->name('materi.create');
+        Route::post('/student/materi/unggah', [MateriController::class, 'store'])->name('materi.store');
 
         // GENERATE SOAL
-        Route::get('/generate', function () { return view('pages.user.generate'); })->name('generate');
+        Route::get('/student/generate-soal', function () { return view('pages.user.generate'); })->name('generate');
 
         Route::post('/generate-soal', [AIController::class, 'generateSoal'])->name('soal.generate');
     });
