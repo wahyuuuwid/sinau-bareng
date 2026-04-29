@@ -32,21 +32,21 @@
 
             {{-- Anak-anak Menu Materi --}}
             <div x-show="openMateri" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 transform scale-95" class="pl-14 space-y-2 mt-1">
-                <a href="/materi/cari" class="block py-2 text-sm {{ request()->is('materi/cari') ? 'text-yellow-400 font-bold' : 'text-indigo-100 hover:text-white' }}">
+                <a href="/student/materi/cari" class="block py-2 text-sm {{ request()->is('student/materi/cari') ? 'text-yellow-400 font-bold' : 'text-indigo-100 hover:text-white' }}">
                     Cari & Unduh
                 </a>
-                <a href="/materi/unggah" class="block py-2 text-sm {{ request()->is('materi/unggah') ? 'text-yellow-400 font-bold' : 'text-indigo-100 hover:text-white' }}">
+                <a href="/student/materi/unggah" class="block py-2 text-sm {{ request()->is('student/materi/unggah') ? 'text-yellow-400 font-bold' : 'text-indigo-100 hover:text-white' }}">
                     Unggah Materi
                 </a>
-                <a href="/materi/saya" class="block py-2 text-sm {{ request()->is('materi/saya') ? 'text-yellow-400 font-bold' : 'text-indigo-100 hover:text-white' }}">
+                <a href="/student/materi/saya" class="block py-2 text-sm {{ request()->is('student/materi/saya') ? 'text-yellow-400 font-bold' : 'text-indigo-100 hover:text-white' }}">
                     Materi Saya
                 </a>
             </div>
         </div>
 
         {{-- Generate Soal Tetap Sama --}}
-        <a href="/generate" 
-            class="flex items-center gap-4 py-3 px-6 rounded-lg transition-all {{ request()->is('generate') ? 'bg-[#4f46e5]/50 text-yellow-400 font-bold' : 'hover:bg-indigo-500/50' }}">
+    <a href="/student/generate-soal" 
+            class="flex items-center gap-4 py-3 px-6 rounded-lg transition-all {{ request()->is('student/generate-soal') ? 'bg-[#4f46e5]/50 text-yellow-400 font-bold' : 'hover:bg-indigo-500/50' }}">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
             </svg>
@@ -55,7 +55,7 @@
     </nav>
 
     <div class="mt-auto">
-        <a href="/profil" class="flex items-center gap-4 py-4 px-10 hover:bg-indigo-500 transition">
+        <a href="/student/profil" class="flex items-center gap-4 py-4 px-10 hover:bg-indigo-500 transition">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
             <span>Profil</span>
         </a>

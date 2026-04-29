@@ -37,20 +37,20 @@ class MateriController extends Controller
         'file_materi'    => 'required|mimes:pdf,docx,txt|max:20480',
     ]);
 
-    // Ambil file
+    // Ambil file asli
     $file = $request->file('file_materi');
-
-    // Bikin nama file dari judul (biar aman dari spasi & karakter aneh)
-    $namaFile = str_replace(' ', '_', strtolower($request->judul_materi));
-
-    // Ambil ekstensi file
-    $ext = $file->getClientOriginalExtension();
-
-    // Gabungkan nama + ekstensi
-    $fileName = $namaFile . '.' . $ext;
-
-    // Simpan file
-    $path = $file->storeAs('materi', $fileName, 'public');
+    
+    // Buat nama file baru (misal: judul_materi_nama_asli.pdf)
+    // Hapus spasi dan karakter aneh dari judul materi
+    $cleanJudul = preg_replace('/[^a-zA-Z0-9]/', '_', $request->judul_materi);
+    $namaAsli = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+    $extension = $file->getClientOriginalExtension();
+    
+    // Contoh nama: Judul_Materi_Nama_File_Asli_timestamp.pdf
+    $namaFile = $cleanJudul . '_' . $namaAsli . '_' . time() . '.' . $extension;
+    
+    // Simpan dengan nama yang sudah ditentukan
+    $path = $file->storeAs('materi', $namaFile, 'public');
 
     // Simpan ke database
     Materi::create([
@@ -68,15 +68,22 @@ class MateriController extends Controller
 
     // Pencarian materi
     public function cari(Request $request)
-    {
-        $materis = Materi::where('judul_materi', 'like', '%' . $request->cari . '%')
-            ->get();
+{
+    $materis = Materi::where('judul_materi', 'like', '%' . $request->cari . '%')->get();
 
-        $listMatkul = Materi::select('mata_kuliah_id')->distinct()->get();
-        $listDosen  = Materi::select('user_id')->distinct()->with('user')->get();
+    $listMatkul = Materi::select('mata_kuliah_id')
+        ->distinct()
+        ->with('mataKuliah') 
+        ->get();
 
-        return view('pages.user.materi.index', compact('materis', 'listMatkul', 'listDosen'));
-    }
+    
+    $listDosen = Materi::select('dosen_id')
+        ->distinct()
+        ->with('dosen') 
+        ->get(); 
+
+    return view('pages.user.materi.index', compact('materis', 'listMatkul', 'listDosen'));
+}
 
     // Ambil dosen berdasarkan mata kuliah (AJAX)
     public function getDosenByMk($id)

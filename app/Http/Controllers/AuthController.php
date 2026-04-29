@@ -55,7 +55,7 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
-        return redirect('/user');
+        return redirect('/student/dashboard');
     }
 
     public function logout(Request $request)

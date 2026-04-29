@@ -45,8 +45,8 @@
 
                 <div class="h-6 w-px bg-gray-300 mx-2"></div>
 
-                <a href="/login" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Masuk</a>
-                <a href="/register" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-medium">
+                <a href="/auth/login" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Masuk</a>
+                <a href="/auth/register" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-medium">
                     Daftar Gratis
                 </a>
             </div>
@@ -62,8 +62,8 @@
 
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-300">
         <div class="px-6 py-4 space-y-4">
-            <a href="/login" class="block w-full text-center border border-indigo-600 text-indigo-600 px-4 py-3 rounded-lg font-medium">Masuk</a>
-            <a href="/register" class="block w-full text-center bg-indigo-600 text-white px-4 py-3 rounded-lg font-medium">Daftar Gratis</a>
+            <a href="/auth/login" class="block w-full text-center border border-indigo-600 text-indigo-600 px-4 py-3 rounded-lg font-medium">Masuk</a>
+            <a href="/auth/register" class="block w-full text-center bg-indigo-600 text-white px-4 py-3 rounded-lg font-medium">Daftar Gratis</a>
         </div>
     </div>
 </header>
