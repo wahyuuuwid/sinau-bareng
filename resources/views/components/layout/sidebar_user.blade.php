@@ -1,4 +1,4 @@
-<div class="bg-[#6366f1] w-64 flex flex-col min-h-screen fixed top-0 text-white" x-data="{ openMateri: {{ request()->is('materi*') ? 'true' : 'false' }} }">
+<div class="bg-[#6366f1] w-64 flex flex-col min-h-screen fixed top-0 text-white" x-data="{ openMateri: {{ request()->is('student/materi*') ? 'true' : 'false' }} }">
     <a href="/" class="p-10 font-bold text-2xl tracking-widest uppercase">
         Logo
     </a>
