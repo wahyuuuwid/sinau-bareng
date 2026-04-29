@@ -1,18 +1,8 @@
-@php
-    $title = "Generate Soal";
-@endphp
-
-@extends('components.layout.app')
-
-@section('content')
-<div class="flex min-h-screen bg-[#f3f4f6]">
-    
-    @include('components.layout.sidebar_user')
-
-    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+<x-layout.app_user title="Dashboard Mahasiswa" class="bg-[#E5E5E5]">
+    <main class="flex-1 flex flex-col overflow-hidden">
         
-        <div class="p-8 h-full flex flex-col">
-            <h1 class="text-4xl font-bold text-gray-800 mb-8">Generate Soal</h1>
+        <div class=" h-full flex flex-col">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Generate Soal</h1>
 
             {{-- BOX HASIL GENERATE --}}
             <div class="flex-1 bg-white rounded-[32px] shadow-sm p-8 mb-6 border border-gray-100 overflow-y-auto">
@@ -81,9 +71,9 @@
                 </div>
             </form>
         </div>
-    </div>
+    </main>
 </div>
-
+</x-layout.app>
 {{-- SCRIPT SEDERHANA BUAT UX --}}
 <script>
     const fileInput = document.getElementById('input_file');
@@ -108,4 +98,3 @@
         btnSubmit.classList.add('animate-pulse');
     };
 </script>
-@endsection

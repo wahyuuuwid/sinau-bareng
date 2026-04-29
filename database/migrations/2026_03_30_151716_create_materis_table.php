@@ -22,7 +22,7 @@ return new class extends Migration
         $table->text('deskripsi')->nullable();
         $table->string('file_path'); // Lokasi file di folder storage
         $table->string('tahun');
-
+        $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
         $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Biar tau ini materi punya siapa
         
         $table->timestamps();

@@ -26,23 +26,31 @@ class MataKuliahSeeder extends Seeder
         $BuLisda = User::where('username', 'Bu Lisda')->first();
         $pakRusdi = User::where('username', 'Pak Rusdi')->first();
         
+        
 
         // 3. Hubungkan Dosen dengan Mata Kuliah di Tabel Pivot
         if ($pakAnggi) {
             DB::table('dosen_mata_kuliah')->insert([
                 ['dosen_id' => $pakAnggi->id, 'mata_kuliah_id' => $mkSO->id, 'created_at' => now(), 'updated_at' => now()],
                 ['dosen_id' => $pakAnggi->id, 'mata_kuliah_id' => $mkJarkom->id, 'created_at' => now(), 'updated_at' => now()],
+            ]);
 
+        }
+        if ($BuLisda) {
+            DB::table('dosen_mata_kuliah')->insert([
                 ['dosen_id' => $BuLisda->id, 'mata_kuliah_id' => $mkPBO->id, 'created_at' => now(), 'updated_at' => now()],
                 ['dosen_id' => $BuLisda->id, 'mata_kuliah_id' => $mkMatriks->id, 'created_at' => now(), 'updated_at' => now()],
+            ]);
 
+        }
+        if ($pakRusdi) {
+            DB::table('dosen_mata_kuliah')->insert([
                 ['dosen_id' => $pakRusdi->id, 'mata_kuliah_id' => $mkPBO->id, 'created_at' => now(), 'updated_at' => now()],
-                ['dosen_id' => $pakRusdi->id, 'mata_kuliah_id' => $mkJarkom->id, 'created_at' => now(), 'updated_at' => now()],
-
-
+                ['dosen_id' => $pakRusdi->id, 'mata_kuliah_id' => $mkMatriks->id, 'created_at' => now(), 'updated_at' => now()],
             ]);
         }
 
-        }
+        
     }
 
+}

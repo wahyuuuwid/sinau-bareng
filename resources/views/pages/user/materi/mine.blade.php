@@ -1,11 +1,5 @@
-@extends('components.layout.app')
-
-@section('content')
-<div class="flex min-h-screen bg-[#E5E5E5]">
-    {{-- Sidebar User --}}
-    @include('components.layout.sidebar_user')
-
-    <div class="flex-1 p-10">
+<x-layout.app_user title="Materi Saya - Sinau Bareng" class="bg-[#E5E5E5]">
+    <main class="flex-1">
         <h1 class="text-3xl font-bold text-black mb-8">Materi > Materi Saya</h1>
 
         @if(session('success'))
@@ -94,6 +88,5 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             Kembali
         </button>
-    </div>
-</div>
-@endsection
+    </main>
+</x-layout.app_user>

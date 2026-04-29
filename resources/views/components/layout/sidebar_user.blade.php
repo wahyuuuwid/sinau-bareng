@@ -1,7 +1,7 @@
-<div class="bg-[#6366f1] w-64 flex flex-col min-h-screen sticky top-0 text-white" x-data="{ openMateri: {{ request()->is('materi*') ? 'true' : 'false' }} }">
-    <div class="p-10 font-bold text-2xl tracking-widest uppercase">
+<div class="bg-[#6366f1] w-64 flex flex-col min-h-screen fixed top-0 text-white" x-data="{ openMateri: {{ request()->is('materi*') ? 'true' : 'false' }} }">
+    <a href="/" class="p-10 font-bold text-2xl tracking-widest uppercase">
         Logo
-    </div>
+    </a>
 
     <div class="px-8 mb-4 text-xs font-bold text-indigo-200 uppercase tracking-widest">
         Menu
