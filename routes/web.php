@@ -15,8 +15,8 @@ Route::get('/', function () {
 
 Route::get('/auth/login', [AuthController::class, 'loginForm'])->name('login');
 Route::get('/auth/register', [AuthController::class, 'registerForm'])->name('register');
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/register', [AuthController::class, 'register']);
 
 // 2. PASSWORD RESET ROUTES
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');

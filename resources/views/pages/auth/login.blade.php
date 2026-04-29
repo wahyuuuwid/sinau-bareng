@@ -38,7 +38,7 @@
                 </form>
 
                 <p class="text-center mt-10 text-sm font-medium text-gray-600">
-                    Belum memiliki Akun ? <a href="/register" class="text-indigo-600 font-bold hover:underline">Daftar</a>
+                    Belum memiliki Akun ? <a href="/auth/register" class="text-indigo-600 font-bold hover:underline">Daftar</a>
                 </p>
             </div>
 

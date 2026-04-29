@@ -34,7 +34,7 @@ class AuthController extends Controller
                 return redirect('/dosen');
             }
 
-            return redirect('/user');
+            return redirect('/student/dashboard');
         }
 
         return back()->with('error','Email atau password salah');
@@ -55,7 +55,7 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
-        return redirect('/user');
+        return redirect('/student/dashboard');
     }
 
     public function logout(Request $request)

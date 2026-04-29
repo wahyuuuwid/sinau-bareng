@@ -51,7 +51,7 @@
 
                     <p class="text-center text-sm text-gray-600 mt-6 font-medium">
                         Sudah memiliki Akun ?
-                        <a href="/login" class="text-indigo-600 font-bold hover:underline">Masuk</a>
+                        <a href="/auth/login" class="text-indigo-600 font-bold hover:underline">Masuk</a>
                     </p>
                 </form>
             </div>
