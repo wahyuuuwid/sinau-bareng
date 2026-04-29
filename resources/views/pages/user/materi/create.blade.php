@@ -1,11 +1,5 @@
-@extends('components.layout.app')
-
-@section('content')
-<div class="flex min-h-screen bg-[#E5E5E5]">
-    {{-- Sidebar User --}}
-    @include('components.layout.sidebar_user')
-
-    <div class="flex-1 p-10">
+<x-layout.app_user title="Unggah Materi - Sinau Bareng" class="bg-[#E5E5E5]">
+    <main class="flex-1">
         <h1 class="text-3xl font-bold text-black mb-10">Materi > Unggah Materi</h1>
 
         @if ($errors->has('file_materi'))
@@ -92,8 +86,8 @@
                 </button>
             </div>
         </form>
-    </div>
-</div>
+    </main>
+</x-layout.app_user>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -160,4 +154,3 @@
         });
     });
 </script>
-@endsection

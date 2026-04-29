@@ -1,15 +1,15 @@
-<div class="bg-[#6366f1] w-64 flex flex-col min-h-screen sticky top-0 text-white" x-data="{ openMateri: {{ request()->is('materi*') ? 'true' : 'false' }} }">
-    <div class="p-10 font-bold text-2xl tracking-widest uppercase">
+<div class="bg-[#6366f1] w-64 flex flex-col min-h-screen fixed top-0 text-white" x-data="{ openMateri: {{ request()->is('materi*') ? 'true' : 'false' }} }">
+    <a href="/" class="p-10 font-bold text-2xl tracking-widest uppercase">
         Logo
-    </div>
+    </a>
 
     <div class="px-8 mb-4 text-xs font-bold text-indigo-200 uppercase tracking-widest">
         Menu
     </div>
 
     <nav class="flex-1 px-4 space-y-2">
-        <a href="/user" 
-            class="flex items-center gap-4 py-3 px-6 rounded-lg transition-all {{ request()->is('user') ? 'bg-[#4f46e5]/50 text-yellow-400 font-bold' : 'hover:bg-indigo-500/50' }}">
+        <a href="/student/dashboard" 
+            class="flex items-center gap-4 py-3 px-6 rounded-lg transition-all {{ request()->is('student/dashboard') ? 'bg-[#4f46e5]/50 text-yellow-400 font-bold' : 'hover:bg-indigo-500/50' }}">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
             </svg>

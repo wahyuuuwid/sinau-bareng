@@ -1,8 +1,4 @@
 <x-layout.app title="Materi - Sinau Bareng" class="bg-[#E5E5E5]">
-    <div class="flex min-h-screen">
-        
-        <x-layout.sidebar_user />
-
         <main class="flex-1 p-15">
             
             <h1 class="text-4xl font-bold text-black mb-10">Materi</h1>
@@ -33,5 +29,4 @@
             </div>
 
         </main>
-    </div>
 </x-layout.app>

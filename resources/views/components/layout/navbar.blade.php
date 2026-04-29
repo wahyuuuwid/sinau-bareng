@@ -39,9 +39,9 @@
                 </div>
 
                 <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Beranda</a>
-                <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">AI Tools</a>
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Ai Tools</a>
                 <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Tentang</a>
-                <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Hubungi Kami</a>
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Kontak</a>
 
                 <div class="h-6 w-px bg-gray-300 mx-2"></div>
 
