@@ -55,7 +55,7 @@ Route::middleware(['auth'])->group(function () {
         // MATERI
         // Route::get('/materi', function() { return view('pages.user.materi'); })->name('materi.index');
         Route::get('/student/materi/cari', [MateriController::class, 'cari'])->name('materi.cari');
-        Route::get('/student/materi/saya', [MateriController::class, 'index'])->name('materi.index');
+        Route::get('/student/materi/saya', [MateriController::class, 'myMateri'])->name('materi.index');
         Route::get('/student/materi/unggah', [MateriController::class, 'create'])->name('materi.create');
         Route::post('/student/materi/unggah', [MateriController::class, 'store'])->name('materi.store');
 

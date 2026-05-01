@@ -1,4 +1,31 @@
 <x-layout.app_user title="Unggah Materi - Sinau Bareng" class="bg-[#E5E5E5]">
+    <style>
+        /* Slicing UI: Menyamakan Tom Select dengan input Judul/Deskripsi */
+        .ts-control {
+            border: none !important;
+            padding: 12px !important; /* Menyesuaikan p-3 */
+            border-radius: 0.5rem !important; /* Menyesuaikan rounded-lg */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important; /* Menyesuaikan shadow-sm */
+            font-weight: 600 !important; /* Menyesuaikan font-semibold */
+            color: #4b5563 !important; /* Menyesuaikan text-gray-600 */
+        }
+
+        .ts-wrapper.focus .ts-control {
+            outline: none !important;
+            box-shadow: 0 0 0 2px #6155F5 !important; /* Menyesuaikan focus:border-[#6155F5] */
+        }
+
+        .ts-control input::placeholder {
+            color: #9ca3af !important; /* Menyesuaikan placeholder gray-400 */
+            font-weight: 600 !important;
+        }
+
+        /* Menghilangkan border default pembungkus */
+        .ts-wrapper .ts-control {
+            border: 1px solid transparent !important;
+        }
+    </style>
+
     <main class="flex-1">
         <h1 class="text-3xl font-bold text-black mb-10">Materi > Unggah Materi</h1>
 
@@ -39,12 +66,12 @@
                 </div>
 
                 <div class="space-y-4">
-                    {{-- DROPDOWN MATA KULIAH (SEARCHABLE) --}}
+                    {{-- DROPDOWN MATA KULIAH --}}
                     <div class="flex items-center gap-4">
                         <label class="w-40 font-bold text-sm text-gray-700">Mata Kuliah<span class="text-red-500">*</span> :</label>
                         <div class="flex-1">
                             <select name="mata_kuliah_id" id="mata_kuliah_id" required placeholder="Cari Mata Kuliah...">
-                                <option value="" disabled selected>Pilih Mata Kuliah</option>
+                                <option value="" disabled selected>Cari Mata Kuliah...</option>
                                 @foreach($mataKuliah as $mk)
                                     <option value="{{ $mk->id }}">{{ $mk->nama_mk }}</option>
                                 @endforeach
@@ -52,7 +79,7 @@
                         </div>
                     </div>
 
-                    {{-- DROPDOWN DOSEN PENGAMPU (SEARCHABLE & DEPENDENT) --}}
+                    {{-- DROPDOWN DOSEN PENGAMPU --}}
                     <div class="flex items-center gap-4">
                         <label class="w-40 font-bold text-sm text-gray-700">Dosen Pengampu<span class="text-red-500">*</span> :</label>
                         <div class="flex-1">
@@ -82,13 +109,13 @@
                     </svg>
                 </button>
 
-                <button type="button" onclick="window.location.href='/materi/saya'"
+                <!-- <button type="button" onclick="window.location.href='/student/dashboard'"
                 class="mt-12 bg-white px-8 py-2 rounded-lg shadow-sm flex items-center gap-3 font-bold text-sm hover:bg-gray-50 transition-all border border-gray-100 text-gray-600">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                     Kembali
-                </button>
+                </button> -->
             </div>
         </form>
     </main>
@@ -96,7 +123,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- INITIALIZE TOM SELECT ---
         const tsMK = new TomSelect("#mata_kuliah_id", {
             create: false,
             sortField: { field: "text", direction: "asc" }
@@ -132,11 +158,10 @@
             filePreview.classList.remove('flex');
         });
 
-        // --- DEPENDENT DROPDOWN WITH TOM SELECT ---
+        // --- DEPENDENT DROPDOWN ---
         tsMK.on('change', function(value) {
             if (!value) return;
 
-            // Reset Dosen Select
             tsDosen.clear();
             tsDosen.clearOptions();
             tsDosen.setTextboxValue('Sedang mencari dosen...');
@@ -145,7 +170,6 @@
                 .then(response => response.json())
                 .then(data => {
                     tsDosen.clearOptions();
-                    
                     if(data.length > 0) {
                         data.forEach(dosen => {
                             tsDosen.addOption({value: dosen.id, text: dosen.username});
@@ -157,9 +181,7 @@
                         tsDosen.setTextboxValue('Belum ada dosen untuk MK ini');
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+                .catch(error => console.error('Error:', error));
         });
     });
 </script>
