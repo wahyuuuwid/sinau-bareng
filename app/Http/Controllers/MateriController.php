@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\Rating;
 
 class MateriController extends Controller
 {
@@ -66,6 +67,50 @@ class MateriController extends Controller
 }
 
 
+public function publicMateriUser(Request $request)
+{
+    $query = Materi::with(['mataKuliah', 'dosen'])
+        ->where('is_public', true); // Hanya materi yang di-set public
+
+    if ($request->filled('cari')) {
+        $query->where('judul_materi', 'like', '%' . $request->cari . '%');
+    }
+
+    if ($request->filled('matkul')) {
+        $query->where('mata_kuliah_id', $request->matkul);
+    }
+
+    if ($request->filled('dosen')) {
+        $query->where('dosen_id', $request->dosen);
+    }
+
+    if ($request->filled('tahun')) {
+        $query->where('tahun', $request->tahun);
+    }
+
+    $materis = $query->latest()->get();
+
+    $listMatkul = MataKuliah::whereIn('id', function($q) {
+        $q->select('mata_kuliah_id')->from('materis')->where('is_public', true);
+    })->get();
+
+    $listDosen = User::whereIn('id', function($q) {
+        $q->select('dosen_id')->from('materis')->where('is_public', true);
+    })->get();
+
+    $listTahun = Materi::where('is_public', true)
+        ->select('tahun')
+        ->distinct()
+        ->pluck('tahun');
+
+    return view('pages.user.materi.public', compact(
+        'materis',
+        'listMatkul',
+        'listDosen',
+        'listTahun'
+    ));
+}
+
 
     /**
      *  Form upload
@@ -109,7 +154,7 @@ class MateriController extends Controller
             'deskripsi' => $request->deskripsi,
         ]);
 
-        return redirect('/materi/saya')
+        return redirect('/student/materi/saya')
             ->with('success', 'Materi berhasil diunggah!');
     }
 
@@ -125,7 +170,7 @@ class MateriController extends Controller
         // Inisialisasi Query dengan Eager Loading agar tidak berat
         $materis = Materi::query()
             ->with(['mataKuliah', 'dosen'])
-            
+            ->with('user') // Tambahkan relasi user
             // Search berdasarkan Judul Materi
             ->when($request->cari, function ($q) use ($request) {
                 return $q->where('judul_materi', 'like', '%' . $request->cari . '%');
@@ -180,5 +225,22 @@ class MateriController extends Controller
         return response()->json(
             $mataKuliah->dosens()->get(['users.id', 'users.username'])
         );
+    }
+
+
+
+    /**
+     *  Rating Materi
+     */
+    public function rate(Request $request, $id)
+    {
+        $request->validate(['nilai' => 'required|integer|min:1|max:5']);
+        
+        Rating::updateOrCreate(
+            ['materi_id' => $id, 'user_id' => Auth::id()],
+            ['nilai' => $request->nilai]
+        );
+
+        return back()->with('success', 'Terima kasih atas penilaiannya!');
     }
 }

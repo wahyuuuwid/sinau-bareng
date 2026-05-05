@@ -55,4 +55,9 @@ class User extends Authenticatable
             'mata_kuliah_id'     // Foreign key tujuan
         );
     }
+
+    public function ratings()
+{
+    return $this->hasMany(Rating::class);
+}
 }

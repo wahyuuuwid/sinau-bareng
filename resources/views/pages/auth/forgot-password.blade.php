@@ -24,7 +24,7 @@
                 </form>
 
                 <div class="mt-8 text-center">
-                    <a href="/login" class="text-indigo-600 font-bold hover:underline text-sm">
+                    <a href="/auth/login" class="text-indigo-600 font-bold hover:underline text-sm">
                         ← Kembali ke Login
                     </a>
                 </div>
