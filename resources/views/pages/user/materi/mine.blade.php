@@ -81,20 +81,20 @@
                                         👁️
                                     </button>
 
-                                    {{-- Tombol Laporkan --}}
+                                    <!-- {{-- Tombol Laporkan --}}
                                     <button onclick="openModal('modal-report-{{ $materi->id }}')" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all">
                                         ⚠️
-                                    </button>
+                                    </button> -->
 
-                                    {{-- Tombol Rating --}}
+                                    <!-- {{-- Tombol Rating --}}
                                     <button onclick="openModal('modal-rate-{{ $materi->id }}')" class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-500 hover:text-white transition-all">
                                         ⭐
-                                    </button>
+                                    </button> -->
 
-                                    {{-- Tombol Unduh --}}
+                                    <!-- {{-- Tombol Unduh --}}
                                     <a href="{{ asset('storage/' . $materi->file_path) }}" download class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-all">
                                         ⬇️
-                                    </a>
+                                    </a> -->
                                 </div>
                             </td>
                         </tr>
