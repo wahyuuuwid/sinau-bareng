@@ -1,46 +1,61 @@
 <x-layout.app_user title="Dashboard Mahasiswa" class="bg-[#E5E5E5]">
-        <main>
-            <div class="flex justify-between items-start mb-10">
-                <div>
-                    <h1 class="text-2xl font-medium text-gray-800">Dashboard</h1>
-                    <h2 class="text-3xl font-bold text-black mt-2">Selamat Datang, {{ Auth::user()->username }}! 👋</h2>
-                </div>
-                <!-- <button class="p-2 text-black"><svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg></button> -->
+    <main>
+        {{-- Header Section --}}
+        <div class="flex justify-between items-start mb-10">
+            <div>
+                <h1 class="text-2xl font-medium text-gray-800">Dashboard</h1>
+                <h2 class="text-3xl font-bold text-black mt-2">Selamat Datang, {{ Auth::user()->username }}! 👋</h2>
+            </div>
+        </div>
+
+        {{-- Section: Materi Populer (Prioritas Rating & Views) --}}
+        <div class="bg-white p-10 rounded-[30px] shadow-sm mb-10 border border-gray-100">
+            <h3 class="text-2xl font-bold mb-6 text-center text-gray-800">Materi Populer Minggu Ini</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @forelse($materiPopuler as $materi)
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-indigo-50 transition-colors border border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 bg-indigo-600 rounded-full"></span>
+                            <span class="font-bold text-gray-700">{{ Str::limit($materi->judul_materi, 30) }}</span>
+                        </div>
+                        
+                        {{-- Menampilkan Badge Rating Rata-rata --}}
+                        <div class="flex items-center gap-1 bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-black">
+                            {{ number_format($materi->ratings_avg_nilai ?? 0, 1) }}
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-2 text-center py-4 text-gray-400 italic text-sm">
+                        Belum ada materi populer minggu ini.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- Statistik Cards --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {{-- Card: Total Materi --}}
+            <div class="bg-white p-10 rounded-[40px] shadow-sm text-center border border-gray-50 flex flex-col items-center justify-center">
+                <p class="text-2xl font-bold text-gray-600 mb-2">Total Materi</p>
+                <p class="text-6xl font-black text-indigo-600">{{ $totalMateri }}</p>
+                <p class="text-sm text-gray-400 mt-2 font-medium">Materi yang kamu unggah</p>
             </div>
 
-            <div class="bg-white p-8 rounded-[30px] shadow-sm mb-10 border border-gray-100 text-left">
-                <h3 class="text-2xl font-bold mb-4 text-center">Materi Populer Minggu Ini</h3>
-                <ul class="inline-block text-left space-y-2">
-                    @forelse($materiTerbaru as $materi)
-                        <li class="flex items-center gap-3 text-indigo-600 font-medium">
-                            <span class="w-2 h-2 bg-indigo-600 rounded-full"></span> {{ Str::limit($materi->judul_materi, 20) }}
-                        </li>
-                    @empty
-                        <li class="text-gray-400 italic text-sm">Belum ada materi diunggah</li>
-                    @endforelse
-                </ul>
+            {{-- Card: Penilaian (Average Rating User) --}}
+            <div class="bg-white p-10 rounded-[40px] shadow-sm text-center border border-gray-50 flex flex-col items-center justify-center">
+                <p class="text-2xl font-bold text-gray-600 mb-2">Penilaian</p>
+                <div class="flex items-center gap-3">
+                    <p class="text-6xl font-black text-yellow-500">
+                        {{ $averageRating > 0 ? number_format($averageRating, 1) : '0' }}
+                    </p>
+                    <svg class="w-12 h-12 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                </div>
+                <p class="text-sm text-gray-400 mt-2 font-medium">Rata-rata dari semua materi kamu</p>
             </div>
-
-            <div class="grid grid-cols-2 gap-10">
-                <div class="bg-white p-10 rounded-[40px] shadow-sm text-center">
-                    <p class="text-2xl font-bold text-black mb-2">Total Materi</p>
-                    <p class="text-4xl font-bold text-indigo-500">{{ $totalMateri }}</p>
-                </div>
-
-                <div class="bg-white p-10 rounded-[40px] shadow-sm text-center">
-                    <p class="text-2xl font-bold text-black mb-2">Total Soal</p>
-                    <p class="text-4xl font-bold text-green-500">Belum di coding</p>
-                </div>
-
-                <div class="bg-white p-10 rounded-[40px] shadow-sm text-center">
-                    <p class="text-2xl font-bold text-black mb-2">Penilaian</p>
-                    <p class="text-4xl font-bold text-yellow-500">Belum di coding</p>
-                </div>
-
-                <div class="bg-white p-10 rounded-[40px] shadow-sm text-center">
-                    <p class="text-2xl font-bold text-black mb-2">Laporan Saya</p>
-                    <p class="text-4xl font-bold text-red-500">Belum di coding</p>
-                </div>
-            </div>
-        </main>
+        </div>
+    </main>
 </x-layout.app_user>

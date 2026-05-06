@@ -67,4 +67,7 @@ Route::middleware(['auth'])->group(function () {
 
     // MATERI
     Route::get('/get-dosen/{id}', [MateriController::class, 'getDosenByMk'])->name('get.dosen');
+
+    // RATING
+    Route::post('/student/materi/rate/{id}', [MateriController::class, 'rate'])->name('materi.rate');
 });
