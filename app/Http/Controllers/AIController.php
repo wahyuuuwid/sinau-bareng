@@ -60,7 +60,7 @@ class AIController extends Controller
     public function generateSoal(Request $request)
     {
         $request->validate([
-            'file_materi' => 'required|mimes:pdf|max:10240',
+            'file_materi' => 'required|mimes:pdf,docx,txt|max:10240',
             'jenis_soal' => 'required|array'
         ]);
 
