@@ -232,7 +232,7 @@ public function publicMateriUser(Request $request)
     /**
      *  Rating Materi
      */
-    public function rate(Request $request, $id)
+    public function rate(Request $request, int $id)
     {
         $request->validate(['nilai' => 'required|integer|min:1|max:5']);
         
