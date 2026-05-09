@@ -53,3 +53,4 @@ class ProfileController extends Controller
         return redirect('/')->with('success', 'Akun berhasil dihapus.');
     }
 }
+
