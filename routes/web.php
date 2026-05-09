@@ -8,7 +8,6 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\AIController;
 use App\Http\Controllers\DosenController;
-use App\Http\Controllers\ProfileController;
 
 // 1. GUEST ROUTES (Bisa diakses tanpa login)
 Route::get('/', function () {
@@ -71,12 +70,4 @@ Route::middleware(['auth'])->group(function () {
 
     // RATING
     Route::post('/student/materi/rate/{id}', [MateriController::class, 'rate'])->name('materi.rate');
-
-    // Profile
-    Route::middleware('auth')->group(function () {
-        Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-        Route::post('/profile/update-name', [ProfileController::class, 'updateName'])->name('profile.updateName');
-        Route::post('/profile/update-email', [ProfileController::class, 'updateEmail'])->name('profile.updateEmail');
-        Route::delete('/profile/delete', [ProfileController::class, 'deleteAccount'])->name('profile.delete');
-    });
 });
