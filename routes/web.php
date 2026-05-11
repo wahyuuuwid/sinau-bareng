@@ -28,17 +28,22 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name(
 
 // 3. AUTH ROUTES (Harus Login)
 Route::middleware(['auth'])->group(function () {
-    
+
+    // PROFIL
+    Route::get('/student/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/student/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/student/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
     // LOGOUT
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // ROLE: ADMIN
-    Route::middleware(['role:admin'])->group(function () {
+    Route::middleware(['auth','role:admin'])->group(function () {
         Route::get('/admin', function () { return view('pages.admin.dashboard'); });
     });
 
     // ROLE: DOSEN
-    Route::middleware(['role:dosen'])->group(function () {
+    Route::middleware(['auth','role:dosen'])->group(function () {
         Route::get('/dosen', [DosenController::class, 'index'])->name('dosen.dashboard');
         Route::get('/dosen/validasi-materi', [DosenController::class, 'validasiMateri'])->name('dosen.validasi');
 
@@ -48,7 +53,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ROLE: USER/MAHASISWA
-    Route::middleware(['role:user'])->group(function () {
+    Route::middleware(['auth','role:user'])->group(function () {
         
         // DASHBOARD (Sekarang sudah lewat Controller!)
         Route::get('/student/dashboard', [DashboardUserController::class, 'index'])->name('user.dashboard');
@@ -59,6 +64,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/student/materi/saya', [MateriController::class, 'myMateri'])->name('materi.index');
         Route::get('/student/materi/unggah', [MateriController::class, 'create'])->name('materi.create');
         Route::post('/student/materi/unggah', [MateriController::class, 'store'])->name('materi.store');
+        Route::get('/student/profile', [ProfileController::class, 'index'])->name('profile.index');
+        Route::put('/student/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/student/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
         // GENERATE SOAL
         Route::get('/student/generate-soal', function () { return view('pages.user.generate'); })->name('generate');
