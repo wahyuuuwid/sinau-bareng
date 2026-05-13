@@ -2,245 +2,168 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Materi;
-use App\Models\MataKuliah;
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Materi;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use App\Models\Rating;
 
 class MateriController extends Controller
 {
     /**
-     *  Materi milik user
+     * Menampilkan semua materi (Halaman Cari Materi)
      */
-    public function myMateri(Request $request)
-{
-    // Inisialisasi Query: Kunci hanya untuk materi milik user login
-    $query = Materi::with(['mataKuliah', 'dosen'])
-        ->where('user_id', Auth::id());
-
-    // Filter & Search (Logika yang sama dengan fitur Cari)
-    // Search Judul Materi
-    if ($request->filled('cari')) {
-        $query->where('judul_materi', 'like', '%' . $request->cari . '%');
-    }
-
-    // Filter Mata Kuliah
-    if ($request->filled('matkul')) {
-        $query->where('mata_kuliah_id', $request->matkul);
-    }
-
-    // Filter Dosen
-    if ($request->filled('dosen')) {
-        $query->where('dosen_id', $request->dosen);
-    }
-
-    // Filter Tahun
-    if ($request->filled('tahun')) {
-        $query->where('tahun', $request->tahun);
-    }
-
-    $materis = $query->latest()->get();
-
-    // Data Dropdown: Hanya matkul/dosen yang pernah lo upload
-    $listMatkul = MataKuliah::whereIn('id', function($q) {
-        $q->select('mata_kuliah_id')->from('materis')->where('user_id', Auth::id());
-    })->get();
-
-    $listDosen = User::whereIn('id', function($q) {
-        $q->select('dosen_id')->from('materis')->where('user_id', Auth::id());
-    })->get();
-
-    $listTahun = Materi::where('user_id', Auth::id())
-        ->select('tahun')
-        ->distinct()
-        ->pluck('tahun');
-
-    return view('pages.user.materi.mine', compact(
-        'materis', 
-        'listMatkul', 
-        'listDosen', 
-        'listTahun'
-    ));
-}
-
-
-public function publicMateriUser(Request $request)
-{
-    $query = Materi::with(['mataKuliah', 'dosen'])
-        ->where('is_public', true); // Hanya materi yang di-set public
-
-    if ($request->filled('cari')) {
-        $query->where('judul_materi', 'like', '%' . $request->cari . '%');
-    }
-
-    if ($request->filled('matkul')) {
-        $query->where('mata_kuliah_id', $request->matkul);
-    }
-
-    if ($request->filled('dosen')) {
-        $query->where('dosen_id', $request->dosen);
-    }
-
-    if ($request->filled('tahun')) {
-        $query->where('tahun', $request->tahun);
-    }
-
-    $materis = $query->latest()->get();
-
-    $listMatkul = MataKuliah::whereIn('id', function($q) {
-        $q->select('mata_kuliah_id')->from('materis')->where('is_public', true);
-    })->get();
-
-    $listDosen = User::whereIn('id', function($q) {
-        $q->select('dosen_id')->from('materis')->where('is_public', true);
-    })->get();
-
-    $listTahun = Materi::where('is_public', true)
-        ->select('tahun')
-        ->distinct()
-        ->pluck('tahun');
-
-    return view('pages.user.materi.public', compact(
-        'materis',
-        'listMatkul',
-        'listDosen',
-        'listTahun'
-    ));
-}
-
-
-    /**
-     *  Form upload
-     */
-    public function create()
+    public function index()
     {
-        return view('pages.user.materi.create', [
-            'mataKuliah' => MataKuliah::all()
-        ]);
+        // UBAH get() MENJADI paginate(9)
+        $materis = Materi::with('user')->latest()->paginate(9); 
+        
+        $listMatkul = Materi::select('mata_kuliah')->distinct()->pluck('mata_kuliah');
+
+        return view('pages.user.materi.index', compact('materis', 'listMatkul'));
     }
 
-
-
-
     /**
-     *  Simpan materi
+     * Menampilkan materi milik user yang sedang login (Halaman Materi Saya)
      */
-    public function store(Request $request)
+    public function myMateri()
     {
-        $validated = $request->validate([
-            'mata_kuliah_id' => ['required', 'exists:mata_kuliahs,id'],
-            'dosen_id'       => ['required', 'exists:users,id'],
-            'judul_materi'   => ['required', 'string'],
-            'file_materi'    => ['required', 'file', 'mimes:pdf,docx,txt', 'max:20480'],
-        ]);
+        // Mengambil materi milik user ini saja
+        $materis = Materi::where('user_id', Auth::id())->latest()->get();
+        
+        // Mengambil daftar unik mata kuliah untuk filter di sidebar mine.blade.php
+        $listMatkul = Materi::where('user_id', Auth::id())
+                            ->select('mata_kuliah')
+                            ->distinct()
+                            ->pluck('mata_kuliah');
 
-        $file = $request->file('file_materi');
-
-        // Clean file name (Laravel style pakai Str)
-        $fileName = Str::slug($validated['judul_materi']) . '_' .
-                    pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' .
-                    time() . '.' . $file->getClientOriginalExtension();
-
-        $path = $file->storeAs('materi', $fileName, 'public');
-
-        Materi::create([
-            ...$validated,
-            'file_path' => $path,
-            'tahun'     => now()->year,
-            'user_id'   => Auth::id(),
-            'deskripsi' => $request->deskripsi,
-        ]);
-
-        return redirect('/student/materi/saya')
-            ->with('success', 'Materi berhasil diunggah!');
+        return view('pages.user.materi.mine', compact('materis', 'listMatkul'));
     }
 
-
-
-
-
     /**
-     *  Search + Filter materi
+     * Fungsi Pencarian (Menjawab error: Call to undefined method cari())
      */
     public function cari(Request $request)
     {
-        // Inisialisasi Query dengan Eager Loading agar tidak berat
-        $materis = Materi::query()
-            ->with(['mataKuliah', 'dosen'])
-            ->with('user') // Tambahkan relasi user
-            // Search berdasarkan Judul Materi
-            ->when($request->cari, function ($q) use ($request) {
-                return $q->where('judul_materi', 'like', '%' . $request->cari . '%');
-            })
-
-            // Filter berdasarkan Mata Kuliah
-            ->when($request->matkul, function ($q) use ($request) {
-                return $q->where('mata_kuliah_id', $request->matkul);
-            })
-
-            // Filter berdasarkan Dosen
-            ->when($request->dosen, function ($q) use ($request) {
-                return $q->where('dosen_id', $request->dosen);
-            })
-
-            // Filter berdasarkan Tahun
-            ->when($request->tahun, function ($q) use ($request) {
-                return $q->where('tahun', $request->tahun);
+        $keyword = $request->get('keyword');
+        
+        // UBAH get() MENJADI paginate(9)
+        $materis = Materi::with('user')
+            ->where(function($query) use ($keyword) {
+                $query->where('judul', 'like', "%$keyword%")
+                      ->orWhere('mata_kuliah', 'like', "%$keyword%");
             })
             ->latest()
-            ->get();
+            ->paginate(9);
 
-        // Data untuk Dropdown Filter 
-        $listMatkul = MataKuliah::whereIn('id', Materi::pluck('mata_kuliah_id')->unique())->get();
-        $listDosen = User::whereIn('id', Materi::pluck('dosen_id')->unique())->get();
-        $listTahun = Materi::select('tahun')->distinct()->pluck('tahun');
+        $listMatkul = Materi::select('mata_kuliah')->distinct()->pluck('mata_kuliah');
 
-        return view('pages.user.materi.index', compact(
-            'materis',
-            'listMatkul',
-            'listDosen',
-            'listTahun'
-        ));
+        return view('pages.user.materi.index', compact('materis', 'listMatkul', 'keyword'));
     }
 
-
-
-    
-
-    /**
-     *   Ambil dosen dari matkul
-     */
-    public function getDosenByMk($id)
+    public function create()
     {
-        $mataKuliah = MataKuliah::find($id);
+        return view('pages.user.materi.create');
+    }
 
-        if (!$mataKuliah) {
-            return response()->json([]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'mata_kuliah' => 'required|string|max:255',
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'file_materi' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,txt|max:20480',
+        ]);
+
+        $filePath = null;
+        $tipeFile = null;
+
+        if ($request->hasFile('file_materi')) {
+            $file = $request->file('file_materi');
+            $tipeFile = $file->getClientOriginalExtension();
+            $filePath = $file->store('materis', 'public'); 
         }
 
-        // Mengambil data dosen yang berelasi dengan Mata Kuliah tersebut
-        return response()->json(
-            $mataKuliah->dosens()->get(['users.id', 'users.username'])
-        );
+        Materi::create([
+            'user_id' => Auth::id(),
+            'mata_kuliah' => $request->mata_kuliah,
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'file_path' => $filePath,
+            'tipe_file' => $tipeFile,
+        ]);
+
+        return redirect()->route('materi.mine')->with('success', 'Materi berhasil diunggah!');
     }
 
-
-
-    /**
-     *  Rating Materi
-     */
-    public function rate(Request $request, int $id)
+    public function show($id)
     {
-        $request->validate(['nilai' => 'required|integer|min:1|max:5']);
-        
-        Rating::updateOrCreate(
-            ['materi_id' => $id, 'user_id' => Auth::id()],
-            ['nilai' => $request->nilai]
-        );
-
-        return back()->with('success', 'Terima kasih atas penilaiannya!');
+    $materi = Materi::with('user')->findOrFail($id);
+    return view('pages.user.materi.detail', compact('materi'));
     }
+
+    public function report(Request $request, $id)
+    {
+        $request->validate([
+            'alasan' => 'required|string|max:255',
+        ]);
+
+        // Periksa tabel 'laporans' Anda. Jika kolomnya bukan 'materi_id', sesuaikan di sini.
+        // Misalnya jika di DB namanya 'id_materi', maka ganti 'materi_id' menjadi 'id_materi'.
+        DB::table('laporans')->insert([
+            'materi_id'  => $id, // Ganti ini jika nama kolom di DB berbeda
+            'user_id'    => Auth::id(),
+            'alasan'     => $request->alasan,
+            'status'     => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Laporan berhasil dikirim ke Admin.');
+    }
+
+    public function download($id)
+    {
+        $materi = Materi::findOrFail($id);
+        
+        // Pastikan path di DB (misal: materis/file.pdf) ditambah 'public/' jika pakai disk public
+        $path = 'public/' . $materi->file_path;
+
+        if (!Storage::exists($path)) {
+            return back()->with('error', 'File tidak ditemukan di server.');
+        }
+
+        $extension = pathinfo($materi->file_path, PATHINFO_EXTENSION);
+        $safeName = Str::slug($materi->judul) . '.' . $extension;
+
+        // return Storage::download akan memaksa browser mengunduh file
+        return Storage::download($path, $safeName);
+    }
+
+    public function rate(Request $request, $id)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+
+        $materi = Materi::findOrFail($id);
+    
+        // Simpan rating ke kolom 'rating' di tabel materis
+        $materi->rating = $request->rating;
+        $materi->save();
+
+        return back()->with('success', 'Rating berhasil disimpan!');
+    }
+
+    public function destroy($id)
+    {
+    // Cari materi milik user yang sedang login agar tidak bisa menghapus milik orang lain
+    $materi = Materi::where('user_id', Auth::id())->findOrFail($id);
+    
+    // Hapus data dari database
+    $materi->delete();
+
+    return redirect()->back()->with('success', 'Materi berhasil dihapus!');
+        }
 }

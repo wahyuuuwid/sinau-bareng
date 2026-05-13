@@ -1,61 +1,4 @@
 <?php
-<<<<<<< Updated upstream
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-
-class ProfileController extends Controller
-{
-    // Menampilkan data profile user
-    public function index()
-    {
-        $user = Auth::user();
-        return view('profile', compact('user'));
-    }
-
-    // Mengubah nama user
-    public function updateName(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        $user = Auth::user();
-        $user->name = $request->name;
-        $user->save();
-
-        return redirect()->route('profile')->with('success', 'Nama berhasil diubah.');
-    }
-
-    // Mengubah email user
-    public function updateEmail(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email|unique:users,email,' . Auth::id(),
-        ]);
-
-        $user = Auth::user();
-        $user->email = $request->email;
-        $user->save();
-
-        return redirect()->route('profile')->with('success', 'Email berhasil diubah.');
-    }
-
-    // Menghapus akun user
-    public function deleteAccount(Request $request)
-    {
-        $user = Auth::user();
-        Auth::logout();
-        $user->delete();
-
-        return redirect('/')->with('success', 'Akun berhasil dihapus.');
-    }
-}
-=======
->>>>>>> Stashed changes
 
 namespace App\Http\Controllers;
 
@@ -68,45 +11,65 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        // PERBAIKAN DI SINI: Mengarah ke 'app_dosen' / 'app_user', BUKAN 'sidebar'
-        $layout = Auth::user()->role == 'dosen' ? 'components.layout.app_dosen' : 'components.layout.app_user';
+        $user = Auth::user();
         
-        // Pastikan nama file view-nya sesuai dengan yang kamu miliki
-        // (contoh: 'pages.profile' atau 'pages.user.profile')
-        return view('pages.user.profile', compact('layout'));
+        // Langsung arahkan ke view mahasiswa
+        return view('pages.user.profile', compact('user'));
     }
 
+    // FUNGSI UNTUK MEMPROSES PEMBARUAN PROFIL
     public function update(Request $request)
     {
+        $user = Auth::user();
+
         $request->validate([
             'username' => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users,email,' . auth()->id(),
+            // Mengecek agar email unik, tapi abaikan email milik user ini sendiri
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id, 
         ]);
 
-        $user = auth()->user();
         $user->update([
             'username' => $request->username,
-            'email'    => $request->email,
+            'email' => $request->email,
         ]);
 
-        return redirect()->back()->with('success', 'Profil Anda berhasil diperbarui!');
+        return back()->with('success', 'Profil Anda berhasil diperbarui!');
     }
 
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'current_password' => 'required',
-            'new_password'     => 'required|string|min:6|confirmed',
+            'current_password' => 'required|current_password', // Cek kecocokan password lama
+            'password' => 'required|string|min:8|confirmed',   // Minimal 8 char & wajib konfirmasi
         ]);
 
-        if (!Hash::check($request->current_password, Auth::user()->password)) {
-            return back()->with('error', 'Password lama tidak sesuai.');
-        }
-
-        Auth::user()->update([
-            'password' => Hash::make($request->new_password)
+        $user = Auth::user();
+        
+        $user->update([
+            'password' => Hash::make($request->password),
         ]);
 
         return back()->with('success', 'Password berhasil diubah!');
+    }
+
+    public function updateName(Request $request) { /* kode lama Anda */ }
+    public function updateEmail(Request $request) { /* kode lama Anda */ }
+    
+    public function deleteAccount()
+    {
+        $user = Auth::user(); // Ambil data user yang sedang login
+
+        // Proses Logout agar sesinya dibersihkan
+        Auth::logout();
+
+        // Hapus akun dari database
+        $user->delete();
+
+        // Bersihkan token keamanan sesi
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Tendang kembali ke halaman login dengan pesan
+        return redirect()->route('login')->with('success', 'Akun Anda telah berhasil dihapus permanen dari sistem.');
     }
 }
