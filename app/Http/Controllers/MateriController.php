@@ -3,143 +3,81 @@
 namespace App\Http\Controllers;
 
 use App\Models\Materi;
-use App\Models\MataKuliah;
 use App\Models\User;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use App\Models\Rating;
 
 class MateriController extends Controller
 {
     /**
-     *  Materi milik user
+     * Materi milik user
      */
     public function myMateri(Request $request)
-{
-    // Inisialisasi Query: Kunci hanya untuk materi milik user login
-    $query = Materi::with(['mataKuliah', 'dosen'])
-        ->where('user_id', Auth::id());
+    {
+        // Inisialisasi Query: Eager loading hanya ke user pengupload
+        $query = Materi::with('user')->where('user_id', Auth::id());
 
-    // Filter & Search (Logika yang sama dengan fitur Cari)
-    // Search Judul Materi
-    if ($request->filled('cari')) {
-        $query->where('judul_materi', 'like', '%' . $request->cari . '%');
+        // Search Judul Materi
+        if ($request->filled('cari')) {
+            $query->where('judul_materi', 'like', '%' . $request->cari . '%');
+        }
+
+        // Filter Pelajaran (Menggunakan string custom)
+        if ($request->filled('pelajaran')) {
+            $query->where('pelajaran', $request->pelajaran);
+        }
+
+        // Filter Tahun
+        if ($request->filled('tahun')) {
+            $query->where('tahun', $request->tahun);
+        }
+
+        $materis = $query->latest()->get();
+
+        // Data Dropdown: Ambil teks pelajaran unik yang PERNAH di-upload oleh user ini
+        $listPelajaran = Materi::where('user_id', Auth::id())
+            ->select('pelajaran')
+            ->distinct()
+            ->pluck('pelajaran');
+
+        $listTahun = Materi::where('user_id', Auth::id())
+            ->select('tahun')
+            ->distinct()
+            ->pluck('tahun');
+
+        return view('pages.user.materi.mine', compact(
+            'materis', 
+            'listPelajaran', 
+            'listTahun'
+        ));
     }
-
-    // Filter Mata Kuliah
-    if ($request->filled('matkul')) {
-        $query->where('mata_kuliah_id', $request->matkul);
-    }
-
-    // Filter Dosen
-    if ($request->filled('dosen')) {
-        $query->where('dosen_id', $request->dosen);
-    }
-
-    // Filter Tahun
-    if ($request->filled('tahun')) {
-        $query->where('tahun', $request->tahun);
-    }
-
-    $materis = $query->latest()->get();
-
-    // Data Dropdown: Hanya matkul/dosen yang pernah lo upload
-    $listMatkul = MataKuliah::whereIn('id', function($q) {
-        $q->select('mata_kuliah_id')->from('materis')->where('user_id', Auth::id());
-    })->get();
-
-    $listDosen = User::whereIn('id', function($q) {
-        $q->select('dosen_id')->from('materis')->where('user_id', Auth::id());
-    })->get();
-
-    $listTahun = Materi::where('user_id', Auth::id())
-        ->select('tahun')
-        ->distinct()
-        ->pluck('tahun');
-
-    return view('pages.user.materi.mine', compact(
-        'materis', 
-        'listMatkul', 
-        'listDosen', 
-        'listTahun'
-    ));
-}
-
-
-public function publicMateriUser(Request $request)
-{
-    $query = Materi::with(['mataKuliah', 'dosen'])
-        ->where('is_public', true); // Hanya materi yang di-set public
-
-    if ($request->filled('cari')) {
-        $query->where('judul_materi', 'like', '%' . $request->cari . '%');
-    }
-
-    if ($request->filled('matkul')) {
-        $query->where('mata_kuliah_id', $request->matkul);
-    }
-
-    if ($request->filled('dosen')) {
-        $query->where('dosen_id', $request->dosen);
-    }
-
-    if ($request->filled('tahun')) {
-        $query->where('tahun', $request->tahun);
-    }
-
-    $materis = $query->latest()->get();
-
-    $listMatkul = MataKuliah::whereIn('id', function($q) {
-        $q->select('mata_kuliah_id')->from('materis')->where('is_public', true);
-    })->get();
-
-    $listDosen = User::whereIn('id', function($q) {
-        $q->select('dosen_id')->from('materis')->where('is_public', true);
-    })->get();
-
-    $listTahun = Materi::where('is_public', true)
-        ->select('tahun')
-        ->distinct()
-        ->pluck('tahun');
-
-    return view('pages.user.materi.public', compact(
-        'materis',
-        'listMatkul',
-        'listDosen',
-        'listTahun'
-    ));
-}
-
 
     /**
-     *  Form upload
+     * Form upload materi
      */
     public function create()
     {
-        return view('pages.user.materi.create', [
-            'mataKuliah' => MataKuliah::all()
-        ]);
+        // Tidak perlu melempar data Master Mata Kuliah lagi karena sekarang input teks bebas
+        return view('pages.user.materi.create');
     }
 
-
-
-
     /**
-     *  Simpan materi
+     * Simpan materi
      */
     public function store(Request $request)
     {
+        // Defensive Validation: Memastikan pelajaran dan judul diisi dengan benar
         $validated = $request->validate([
-            'mata_kuliah_id' => ['required', 'exists:mata_kuliahs,id'],
-            'dosen_id'       => ['required', 'exists:users,id'],
-            'judul_materi'   => ['required', 'string'],
-            'file_materi'    => ['required', 'file', 'mimes:pdf,docx,txt', 'max:20480'],
+            'pelajaran'    => ['required', 'string', 'max:255'],
+            'judul_materi' => ['required', 'string', 'max:255'],
+            'file_materi'  => ['required', 'file', 'mimes:pdf,docx,txt', 'max:20480'],
         ]);
 
         $file = $request->file('file_materi');
 
-        // Clean file name (Laravel style pakai Str)
+        // Clean file name menggunakan string helper Laravel
         $fileName = Str::slug($validated['judul_materi']) . '_' .
                     pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' .
                     time() . '.' . $file->getClientOriginalExtension();
@@ -147,90 +85,55 @@ public function publicMateriUser(Request $request)
         $path = $file->storeAs('materi', $fileName, 'public');
 
         Materi::create([
-            ...$validated,
-            'file_path' => $path,
-            'tahun'     => now()->year,
-            'user_id'   => Auth::id(),
-            'deskripsi' => $request->deskripsi,
+            'pelajaran'    => $validated['pelajaran'],
+            'judul_materi' => $validated['judul_materi'],
+            'file_path'    => $path,
+            'tahun'        => now()->year,
+            'user_id'      => Auth::id(),
+            'deskripsi'    => $request->deskripsi,
         ]);
 
         return redirect('/student/materi/saya')
             ->with('success', 'Materi berhasil diunggah!');
     }
 
-
-
-
-
     /**
-     *  Search + Filter materi
+     * Search + Filter semua materi (Halaman Utama)
      */
     public function cari(Request $request)
     {
-        // Inisialisasi Query dengan Eager Loading agar tidak berat
-        $materis = Materi::query()
-            ->with(['mataKuliah', 'dosen'])
-            ->with('user') // Tambahkan relasi user
-            // Search berdasarkan Judul Materi
-            ->when($request->cari, function ($q) use ($request) {
-                return $q->where('judul_materi', 'like', '%' . $request->cari . '%');
-            })
+        $query = Materi::query()->with('user');
 
-            // Filter berdasarkan Mata Kuliah
-            ->when($request->matkul, function ($q) use ($request) {
-                return $q->where('mata_kuliah_id', $request->matkul);
-            })
+        // Search berdasarkan Judul Materi
+        if ($request->filled('cari')) {
+            $query->where('judul_materi', 'like', '%' . $request->cari . '%');
+        }
 
-            // Filter berdasarkan Dosen
-            ->when($request->dosen, function ($q) use ($request) {
-                return $q->where('dosen_id', $request->dosen);
-            })
+        // Filter berdasarkan Pelajaran (Teks kustom)
+        if ($request->filled('pelajaran')) {
+            $query->where('pelajaran', $request->pelajaran);
+        }
 
-            // Filter berdasarkan Tahun
-            ->when($request->tahun, function ($q) use ($request) {
-                return $q->where('tahun', $request->tahun);
-            })
-            ->latest()
-            ->get();
+        // Filter berdasarkan Tahun
+        if ($request->filled('tahun')) {
+            $query->where('tahun', $request->tahun);
+        }
 
-        // Data untuk Dropdown Filter 
-        $listMatkul = MataKuliah::whereIn('id', Materi::pluck('mata_kuliah_id')->unique())->get();
-        $listDosen = User::whereIn('id', Materi::pluck('dosen_id')->unique())->get();
+        $materis = $query->latest()->get();
+
+        // Ambil data unik untuk dropdown filter dari apa yang ada di database
+        $listPelajaran = Materi::select('pelajaran')->distinct()->pluck('pelajaran');
         $listTahun = Materi::select('tahun')->distinct()->pluck('tahun');
 
         return view('pages.user.materi.index', compact(
             'materis',
-            'listMatkul',
-            'listDosen',
+            'listPelajaran',
             'listTahun'
         ));
     }
 
-
-
-    
-
     /**
-     *   Ambil dosen dari matkul
-     */
-    public function getDosenByMk($id)
-    {
-        $mataKuliah = MataKuliah::find($id);
-
-        if (!$mataKuliah) {
-            return response()->json([]);
-        }
-
-        // Mengambil data dosen yang berelasi dengan Mata Kuliah tersebut
-        return response()->json(
-            $mataKuliah->dosens()->get(['users.id', 'users.username'])
-        );
-    }
-
-
-
-    /**
-     *  Rating Materi
+     * Rating Materi
      */
     public function rate(Request $request, int $id)
     {

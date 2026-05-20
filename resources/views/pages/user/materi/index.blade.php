@@ -1,4 +1,26 @@
 <x-layout.app_user title="Cari & Unduh Materi" class="bg-[#E5E5E5]">
+    {{-- CSS Custom untuk Scrollbar Halus --}}
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8;
+        }
+        .animate-modal-enter { animation: modalEnter 0.3s ease-out forwards; }
+        @keyframes modalEnter {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+
     <main>
         <h1 class="text-3xl font-bold text-black mb-8">
             Materi > Cari & Unduh Materi
@@ -29,17 +51,10 @@
 
                 <span class="font-bold text-gray-700 text-sm">Filter :</span>
 
-                <select name="matkul" class="bg-white px-4 py-2 rounded-lg shadow-sm text-xs font-bold border-none focus:ring-2 focus:ring-[#6155F5]">
-                    <option value="">Mata Kuliah</option>
-                    @foreach($listMatkul as $m)
-                        <option value="{{ $m->id }}" {{ request('matkul') == $m->id ? 'selected' : '' }}>{{ $m->nama_mk }}</option>
-                    @endforeach
-                </select>
-
-                <select name="dosen" class="bg-white px-4 py-2 rounded-lg shadow-sm text-xs font-bold border-none focus:ring-2 focus:ring-[#6155F5]">
-                    <option value="">Dosen</option>
-                    @foreach($listDosen as $d)
-                        <option value="{{ $d->id }}" {{ request('dosen') == $d->id ? 'selected' : '' }}>{{ $d->username }}</option>
+                <select name="pelajaran" class="bg-white px-4 py-2 rounded-lg shadow-sm text-xs font-bold border-none focus:ring-2 focus:ring-[#6155F5]">
+                    <option value="">Semua Pelajaran</option>
+                    @foreach($listPelajaran as $p)
+                        <option value="{{ $p }}" {{ request('pelajaran') == $p ? 'selected' : '' }}>{{ $p }}</option>
                     @endforeach
                 </select>
 
@@ -62,9 +77,8 @@
                 <thead>
                     <tr class="bg-[#6155F5] text-white text-sm">
                         <th class="py-5 px-4 font-bold">No</th>
-                        <th class="py-5 px-4 font-bold border-l border-white/20 text-left">Matakuliah</th>
+                        <th class="py-5 px-4 font-bold border-l border-white/20 text-left">Pelajaran</th>
                         <th class="py-5 px-4 font-bold border-l border-white/20 text-left">Materi</th>
-                        <th class="py-5 px-4 font-bold border-l border-white/20">Dosen</th>
                         <th class="py-5 px-4 font-bold border-l border-white/20">Pengunggah</th>
                         <th class="py-5 px-4 font-bold border-l border-white/20">Tahun</th>
                         <th class="py-5 px-4 font-bold border-l border-white/20">Aksi</th>
@@ -74,54 +88,56 @@
                     @forelse($materis as $index => $materi)
                         <tr class="border-b {{ $index % 2 == 1 ? 'bg-[#EFEEFF]' : 'bg-white' }} hover:bg-indigo-50 transition-colors">
                             <td class="py-4">{{ $index + 1 }}.</td>
-                            <td class="text-left px-4">{{ $materi->mataKuliah->nama_mk ?? '-' }}</td>
-                            <td class="text-left px-4 font-bold">{{ $materi->judul_materi }}</td>
-                            <td>{{ $materi->dosen->username ?? '-' }}</td>
+                            <td class="text-left px-4 italic text-gray-600">{{ $materi->pelajaran }}</td>
+                            <td class="text-left px-4 font-bold text-gray-900">{{ $materi->judul_materi }}</td>
                             <td>{{ $materi->user->username ?? '-' }}</td>
                             <td>{{ $materi->tahun }}</td>
                             <td class="py-4">
                                 <div class="flex justify-center items-center gap-2 px-2">
-                                    <button onclick="openModal('modal-detail-{{ $materi->id }}')" class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all">👁️</button>
-                                    <button onclick="openModal('modal-report-{{ $materi->id }}')" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all">⚠️</button>
-                                    <button onclick="openModal('modal-rate-{{ $materi->id }}')" class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-500 hover:text-white transition-all">⭐</button>
-                                    <a href="{{ asset('storage/' . $materi->file_path) }}" download class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-all">⬇️</a>
+                                    <button onclick="openModal('modal-detail-{{ $materi->id }}')" class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="Detail">👁️</button>
+                                    <button onclick="openModal('modal-report-{{ $materi->id }}')" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all" title="Laporkan">⚠️</button>
+                                    <button onclick="openModal('modal-rate-{{ $materi->id }}')" class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-500 hover:text-white transition-all" title="Beri Rating">⭐</button>
+                                    <a href="{{ asset('storage/' . $materi->file_path) }}" download class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-all" title="Unduh File">⬇️</a>
                                 </div>
                             </td>
                         </tr>
 
-                        {{-- MODAL DETAIL --}}
+                        {{-- MODAL DETAIL (FIXED STICKY HEADER & INFO) --}}
                         <div id="modal-detail-{{ $materi->id }}" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                            <div class="bg-white rounded-[30px] shadow-2xl w-full max-w-2xl overflow-hidden animate-modal-enter">
-                                <div class="bg-[#6155F5] px-8 py-5 flex justify-between items-center text-white">
+                            <div class="bg-white rounded-[30px] shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-modal-enter">
+                                {{-- 1. Header Modal Sticky --}}
+                                <div class="bg-[#6155F5] px-8 py-5 flex justify-between items-center text-white flex-shrink-0">
                                     <h3 class="font-bold text-xl tracking-tight">Detail Materi</h3>
                                     <button onclick="closeModal('modal-detail-{{ $materi->id }}')" class="text-2xl hover:rotate-90 transition-transform duration-300">✕</button>
                                 </div>
-                                <div class="p-10 space-y-6 text-left">
+                                {{-- 2. Info Judul & Statistik Sticky --}}
+                                <div class="px-10 pt-8 pb-4 space-y-6 text-left flex-shrink-0">
                                     <div>
                                         <h4 class="text-3xl font-black text-[#6155F5] leading-tight mb-2">{{ $materi->judul_materi }}</h4>
-                                        <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold">{{ $materi->mataKuliah->nama_mk ?? '-' }}</span>
+                                        <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold">{{ $materi->pelajaran }}</span>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-8 py-6 border-y border-gray-100">
+                                    <div class="grid grid-cols-2 gap-8 py-4 border-y border-gray-100">
                                         <div>
-                                            <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Dosen Pengampu</p>
-                                            <p class="font-bold text-gray-700 text-lg">{{ $materi->dosen->username ?? '-' }}</p>
+                                            <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Pengunggah</p>
+                                            <p class="font-bold text-gray-700 text-lg">{{ $materi->user->username ?? '-' }}</p>
                                         </div>
                                         <div>
                                             <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Tahun Upload</p>
                                             <p class="font-bold text-gray-700 text-lg">{{ $materi->tahun }}</p>
                                         </div>
                                     </div>
-                                    <div>
-                                        <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-3">Deskripsi / Catatan</p>
-                                        <div class="bg-gray-50 p-6 rounded-2xl text-sm text-gray-600 leading-relaxed italic border border-gray-100 min-h-[120px]">
-                                            {{ $materi->deskripsi ?? 'Tidak ada deskripsi tambahan untuk materi ini.' }}
-                                        </div>
+                                </div>
+                                {{-- 3. Area Deskripsi Solo Scrollable --}}
+                                <div class="px-10 pb-8 text-left overflow-y-auto flex-1 custom-scrollbar">
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-3 sticky top-0 bg-white py-1">Deskripsi / Catatan</p>
+                                    <div class="bg-gray-50 p-6 rounded-2xl text-sm text-gray-600 leading-relaxed italic border border-gray-100 whitespace-pre-line">
+                                        {{ $materi->deskripsi ?? 'Tidak ada deskripsi tambahan untuk materi ini.' }}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- MODAL RATING (FIXED UI) --}}
+                        {{-- MODAL RATING --}}
                         <div id="modal-rate-{{ $materi->id }}" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
                             <div class="bg-white rounded-[40px] w-full max-w-md overflow-hidden shadow-2xl animate-modal-enter">
                                 <form action="{{ route('materi.rate', $materi->id) }}" method="POST" class="p-10">
@@ -130,22 +146,14 @@
                                         <h3 class="text-2xl font-black text-gray-800 mb-2">Beri Penilaian</h3>
                                         <p class="text-gray-400 text-sm font-medium px-4 leading-relaxed italic">"{{ $materi->judul_materi }}"</p>
                                     </div>
-                                    
                                     <input type="hidden" name="nilai" id="rating-value-{{ $materi->id }}" value="0">
-                                    
                                     <div class="flex justify-center gap-3 mb-10">
                                         @for($i = 1; $i <= 5; $i++)
-                                            <button type="button" 
-                                                onclick="setRating({{ $materi->id }}, {{ $i }})"
-                                                onmouseover="hoverRating({{ $materi->id }}, {{ $i }})"
-                                                onmouseleave="resetRating({{ $materi->id }})"
-                                                class="star-{{ $materi->id }} text-gray-200 transition-all duration-200 transform hover:scale-125"
-                                                data-value="{{ $i }}">
+                                            <button type="button" onclick="setRating({{ $materi->id }}, {{ $i }})" onmouseover="hoverRating({{ $materi->id }}, {{ $i }})" onmouseleave="resetRating({{ $materi->id }})" class="star-{{ $materi->id }} text-gray-200 transition-all duration-200 transform hover:scale-125" data-value="{{ $i }}">
                                                 <svg class="w-14 h-14" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                             </button>
                                         @endfor
                                     </div>
-
                                     <div class="grid grid-cols-2 gap-4">
                                         <button type="button" onclick="closeModal('modal-rate-{{ $materi->id }}')" class="py-4 bg-gray-100 text-gray-500 font-bold rounded-2xl hover:bg-gray-200 transition-colors">Batal</button>
                                         <button type="submit" class="py-4 bg-[#6155F5] text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-[#4f44d8] transition-all transform active:scale-95">Simpan</button>
@@ -168,43 +176,30 @@
                             </div>
                         </div>
                     @empty
-                        <tr><td colspan="7" class="py-16 text-gray-400 italic font-medium">Yah, materi tidak ditemukan. Coba kata kunci lain?</td></tr>
+                        <tr><td colspan="6" class="py-16 text-gray-400 italic font-medium">Yah, materi tidak ditemukan. Coba kata kunci lain?</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </main>
 
-    <style>
-        .animate-modal-enter { animation: modalEnter 0.3s ease-out forwards; }
-        @keyframes modalEnter {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-    </style>
-
     <script>
         let lockedRatings = {}; 
-
         function openModal(id) {
             document.getElementById(id).classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
-
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
             document.body.style.overflow = 'auto';
         }
-
         function setRating(materiId, val) {
             lockedRatings[materiId] = val;
             document.getElementById(`rating-value-${materiId}`).value = val;
             applyColor(materiId, val);
         }
-
         function hoverRating(materiId, val) { applyColor(materiId, val); }
         function resetRating(materiId) { applyColor(materiId, lockedRatings[materiId] || 0); }
-
         function applyColor(materiId, val) {
             const stars = document.querySelectorAll(`.star-${materiId}`);
             stars.forEach(star => {
@@ -218,7 +213,6 @@
                 }
             });
         }
-
         window.onclick = function(event) {
             if (event.target.classList.contains('bg-black/60')) {
                 event.target.classList.add('hidden');
