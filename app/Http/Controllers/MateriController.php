@@ -136,14 +136,20 @@ class MateriController extends Controller
      * Rating Materi
      */
     public function rate(Request $request, int $id)
-    {
-        $request->validate(['nilai' => 'required|integer|min:1|max:5']);
-        
-        Rating::updateOrCreate(
-            ['materi_id' => $id, 'user_id' => Auth::id()],
-            ['nilai' => $request->nilai]
-        );
+{
+    $request->validate(['nilai' => 'required|integer|min:1|max:5']);
 
-        return back()->with('success', 'Terima kasih atas penilaiannya!');
+    $materi = \App\Models\Materi::findOrFail($id);
+
+    if ($materi->user_id === Auth::id()) {
+        return back()->with('error', 'Wkwk gak boleh dong rating materi buatan sendiri! Harus objektif.');
     }
+
+    Rating::updateOrCreate(
+        ['materi_id' => $id, 'user_id' => Auth::id()],
+        ['nilai' => $request->nilai]
+    );
+
+    return back()->with('success', 'Terima kasih atas penilaiannya!');
+}
 }

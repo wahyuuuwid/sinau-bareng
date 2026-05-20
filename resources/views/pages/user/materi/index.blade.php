@@ -36,6 +36,16 @@
             </div>
         @endif
 
+        {{-- ALERT PROTEKSI / ERROR RATING --}}
+        @if(session('error'))
+            <div id="alert-error" class="bg-red-500 text-white p-4 rounded-2xl mb-6 shadow-lg flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="font-bold">❌ {{ session('error') }}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white font-bold">✕</button>
+            </div>
+        @endif
+
         {{-- FORM FILTER & SEARCH --}}
         <form method="GET" action="{{ route('materi.cari') }}">
             <div class="flex flex-wrap items-center gap-4 mb-8">
@@ -86,10 +96,27 @@
                 </thead>
                 <tbody class="text-[13px] font-semibold text-gray-700">
                     @forelse($materis as $index => $materi)
+                        {{-- Logika Matematika Hitung Rata-Rata Bintang --}}
+                        @php
+                            $rataRata = $materi->ratings()->avg('nilai');
+                            $jumlahUser = $materi->ratings()->count();
+                        @endphp
+
                         <tr class="border-b {{ $index % 2 == 1 ? 'bg-[#EFEEFF]' : 'bg-white' }} hover:bg-indigo-50 transition-colors">
                             <td class="py-4">{{ $index + 1 }}.</td>
                             <td class="text-left px-4 italic text-gray-600">{{ $materi->pelajaran }}</td>
-                            <td class="text-left px-4 font-bold text-gray-900">{{ $materi->judul_materi }}</td>
+                            <td class="text-left px-4 py-3">
+                                <span class="font-bold text-gray-900 block">{{ $materi->judul_materi }}</span>
+                                {{-- Preview Bintang Kumulatif di bawah judul materi --}}
+                                <div class="flex items-center gap-1 mt-0.5">
+                                    @if($jumlahUser > 0)
+                                        <span class="text-yellow-500 text-xs">⭐</span>
+                                        <span class="text-gray-700 text-[11px] font-bold">{{ number_format($rataRata, 1) }} <span class="text-gray-400 font-normal">({{ $jumlahUser }} ulasan)</span></span>
+                                    @else
+                                        <span class="text-gray-400 text-[11px] font-normal italic">Belum ada ulasan</span>
+                                    @endif
+                                </div>
+                            </td>
                             <td>{{ $materi->user->username ?? '-' }}</td>
                             <td>{{ $materi->tahun }}</td>
                             <td class="py-4">
@@ -102,19 +129,28 @@
                             </td>
                         </tr>
 
-                        {{-- MODAL DETAIL (FIXED STICKY HEADER & INFO) --}}
+                        {{-- MODAL DETAIL (FIXED STICKY HEADER & INFO WITH BINTANG) --}}
                         <div id="modal-detail-{{ $materi->id }}" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
                             <div class="bg-white rounded-[30px] shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-modal-enter">
-                                {{-- 1. Header Modal Sticky --}}
+                                {{-- Header Modal Sticky --}}
                                 <div class="bg-[#6155F5] px-8 py-5 flex justify-between items-center text-white flex-shrink-0">
                                     <h3 class="font-bold text-xl tracking-tight">Detail Materi</h3>
                                     <button onclick="closeModal('modal-detail-{{ $materi->id }}')" class="text-2xl hover:rotate-90 transition-transform duration-300">✕</button>
                                 </div>
-                                {{-- 2. Info Judul & Statistik Sticky --}}
+                                {{-- Info Ringkas Sticky --}}
                                 <div class="px-10 pt-8 pb-4 space-y-6 text-left flex-shrink-0">
                                     <div>
-                                        <h4 class="text-3xl font-black text-[#6155F5] leading-tight mb-2">{{ $materi->judul_materi }}</h4>
-                                        <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold">{{ $materi->pelajaran }}</span>
+                                        <div class="flex items-start justify-between gap-4">
+                                            <h4 class="text-3xl font-black text-[#6155F5] leading-tight mb-2 flex-1">{{ $materi->judul_materi }}</h4>
+                                            {{-- Nilai rating besar di dalam detail --}}
+                                            <div class="text-right flex flex-col items-end flex-shrink-0">
+                                                @if($jumlahUser > 0)
+                                                    <span class="text-2xl font-black text-gray-800 flex items-center gap-1">⭐ {{ number_format($rataRata, 1) }}</span>
+                                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{{ $jumlahUser }} Total Ulasan</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold inline-block mt-1">{{ $materi->pelajaran }}</span>
                                     </div>
                                     <div class="grid grid-cols-2 gap-8 py-4 border-y border-gray-100">
                                         <div>
@@ -127,7 +163,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- 3. Area Deskripsi Solo Scrollable --}}
+                                {{-- Area Deskripsi Scrollable --}}
                                 <div class="px-10 pb-8 text-left overflow-y-auto flex-1 custom-scrollbar">
                                     <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-3 sticky top-0 bg-white py-1">Deskripsi / Catatan</p>
                                     <div class="bg-gray-50 p-6 rounded-2xl text-sm text-gray-600 leading-relaxed italic border border-gray-100 whitespace-pre-line">
@@ -199,7 +235,7 @@
             applyColor(materiId, val);
         }
         function hoverRating(materiId, val) { applyColor(materiId, val); }
-        function resetRating(materiId) { applyColor(materiId, lockedRatings[materiId] || 0); }
+        function removeRating(materiId) { applyColor(materiId, lockedRatings[materiId] || 0); }
         function applyColor(materiId, val) {
             const stars = document.querySelectorAll(`.star-${materiId}`);
             stars.forEach(star => {
