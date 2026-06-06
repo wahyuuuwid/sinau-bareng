@@ -30,7 +30,12 @@
         @if(session('success'))
             <div id="alert-success" class="bg-green-500 text-white p-4 rounded-2xl mb-6 shadow-lg flex items-center justify-between animate-bounce">
                 <div class="flex items-center gap-3">
-                    <span class="font-bold">✅ {{ session('success') }}</span>
+                    <span class="font-bold flex items-center gap-2">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        {{ session('success') }}
+                    </span>
                 </div>
                 <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white font-bold">✕</button>
             </div>
@@ -51,10 +56,17 @@
 
                 <span class="font-bold text-gray-700 text-sm">Filter :</span>
 
-                <select name="pelajaran" class="bg-white px-4 py-2 rounded-lg shadow-sm text-xs font-bold border-none focus:ring-2 focus:ring-[#6155F5]">
-                    <option value="">Semua Pelajaran</option>
-                    @foreach($listPelajaran as $p)
-                        <option value="{{ $p }}" {{ request('pelajaran') == $p ? 'selected' : '' }}>{{ $p }}</option>
+                <select name="mata_kuliah_id" class="bg-white px-4 py-2 rounded-lg shadow-sm text-xs font-bold border-none focus:ring-2 focus:ring-[#6155F5]">
+                    <option value="">Semua Mata Kuliah</option>
+                    @foreach($listMataKuliah as $mk)
+                        <option value="{{ $mk->id }}" {{ request('mata_kuliah_id') == $mk->id ? 'selected' : '' }}>{{ $mk->nama_mk }}</option>
+                    @endforeach
+                </select>
+
+                <select name="dosen_id" class="bg-white px-4 py-2 rounded-lg shadow-sm text-xs font-bold border-none focus:ring-2 focus:ring-[#6155F5]">
+                    <option value="">Semua Dosen</option>
+                    @foreach($listDosen as $dosen)
+                        <option value="{{ $dosen->id }}" {{ request('dosen_id') == $dosen->id ? 'selected' : '' }}>{{ $dosen->username }}</option>
                     @endforeach
                 </select>
 
@@ -77,7 +89,8 @@
                 <thead>
                     <tr class="bg-[#6155F5] text-white text-sm">
                         <th class="py-5 px-4 font-bold">No</th>
-                        <th class="py-5 px-4 font-bold border-l border-white/20 text-left">Pelajaran</th>
+                        <th class="py-5 px-4 font-bold border-l border-white/20 text-left">Mata Kuliah</th>
+                        <th class="py-5 px-4 font-bold border-l border-white/20 text-left">Dosen Pengampu</th>
                         <th class="py-5 px-4 font-bold border-l border-white/20 text-left">Materi</th>
                         <th class="py-5 px-4 font-bold border-l border-white/20">Tahun</th>
                         <th class="py-5 px-4 font-bold border-l border-white/20">Status</th>
@@ -88,7 +101,8 @@
                     @forelse($materis as $index => $materi)
                         <tr class="border-b {{ $index % 2 == 1 ? 'bg-[#EFEEFF]' : 'bg-white' }} hover:bg-indigo-50 transition-colors">
                             <td class="py-4">{{ $index + 1 }}.</td>
-                            <td class="text-left px-4 italic text-gray-600">{{ $materi->pelajaran }}</td>
+                            <td class="text-left px-4 italic text-gray-600 font-bold uppercase">{{ $materi->mataKuliah->nama_mk ?? '-' }}</td>
+                            <td class="text-left px-4 text-gray-600">{{ $materi->dosen->username ?? '-' }}</td>
                             <td class="text-left px-4 font-bold text-gray-900">{{ $materi->judul_materi }}</td>
                             <td>{{ $materi->tahun }}</td>
                             <td>
@@ -101,8 +115,17 @@
                             </td>
                             <td class="py-4">
                                 <div class="flex justify-center items-center gap-2 px-2">
-                                    <button onclick="openModal('modal-detail-{{ $materi->id }}')" class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="Detail">👁️</button>
-                                    <a href="{{ asset('storage/' . $materi->file_path) }}" download class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-all" title="Unduh">⬇️</a>
+                                    <button onclick="openModal('modal-detail-{{ $materi->id }}')" class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center" title="Detail">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                    <a href="{{ asset('storage/' . $materi->file_path) }}" download class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-all flex items-center justify-center" title="Unduh">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                        </svg>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -119,16 +142,20 @@
                                 <div class="px-10 pt-8 pb-4 space-y-6 text-left flex-shrink-0">
                                     <div>
                                         <h4 class="text-3xl font-black text-[#6155F5] leading-tight mb-2">{{ $materi->judul_materi }}</h4>
-                                        <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold">{{ $materi->pelajaran }}</span>
+                                        <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold uppercase">{{ $materi->mataKuliah->nama_mk ?? '-' }}</span>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-8 py-4 border-y border-gray-100">
+                                    <div class="grid grid-cols-3 gap-8 py-4 border-y border-gray-100">
                                         <div>
                                             <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Status Verifikasi</p>
-                                            <p class="font-bold text-gray-700 text-lg uppercase tracking-wide">{{ $materi->status }}</p>
+                                            <p class="font-bold text-gray-700 text-base uppercase tracking-wide">{{ $materi->status }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Dosen Pengampu</p>
+                                            <p class="font-bold text-[#6155F5] text-base">{{ $materi->dosen->username ?? '-' }}</p>
                                         </div>
                                         <div>
                                             <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Tahun Upload</p>
-                                            <p class="font-bold text-gray-700 text-lg">{{ $materi->tahun }}</p>
+                                            <p class="font-bold text-gray-700 text-base">{{ $materi->tahun }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -142,7 +169,7 @@
                             </div>
                         </div>
                     @empty
-                        <tr><td colspan="6" class="py-16 text-gray-400 italic font-medium">Kamu belum mengunggah materi apapun.</td></tr>
+                        <tr><td colspan="7" class="py-16 text-gray-400 italic font-medium">Kamu belum mengunggah materi apapun.</td></tr>
                     @endforelse
                 </tbody>
             </table>

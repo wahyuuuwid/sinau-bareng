@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Materi;
 use App\Models\User;
 use App\Models\Rating;
+use App\Models\MataKuliah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -16,17 +17,22 @@ class MateriController extends Controller
      */
     public function myMateri(Request $request)
     {
-        // Inisialisasi Query: Eager loading hanya ke user pengupload
-        $query = Materi::with('user')->where('user_id', Auth::id());
+        // Inisialisasi Query: Eager loading mataKuliah, dosen, dan user pengupload
+        $query = Materi::with(['mataKuliah', 'dosen', 'user'])->where('user_id', Auth::id());
 
         // Search Judul Materi
         if ($request->filled('cari')) {
             $query->where('judul_materi', 'like', '%' . $request->cari . '%');
         }
 
-        // Filter Pelajaran (Menggunakan string custom)
-        if ($request->filled('pelajaran')) {
-            $query->where('pelajaran', $request->pelajaran);
+        // Filter Mata Kuliah
+        if ($request->filled('mata_kuliah_id')) {
+            $query->where('mata_kuliah_id', $request->mata_kuliah_id);
+        }
+
+        // Filter Dosen
+        if ($request->filled('dosen_id')) {
+            $query->where('dosen_id', $request->dosen_id);
         }
 
         // Filter Tahun
@@ -36,12 +42,9 @@ class MateriController extends Controller
 
         $materis = $query->latest()->get();
 
-        // Data Dropdown: Ambil teks pelajaran unik yang PERNAH di-upload oleh user ini
-        $listPelajaran = Materi::where('user_id', Auth::id())
-            ->select('pelajaran')
-            ->distinct()
-            ->pluck('pelajaran');
-
+        // Data Dropdown Filter
+        $listMataKuliah = MataKuliah::all();
+        $listDosen = User::where('role', 'dosen')->get();
         $listTahun = Materi::where('user_id', Auth::id())
             ->select('tahun')
             ->distinct()
@@ -49,7 +52,8 @@ class MateriController extends Controller
 
         return view('pages.user.materi.mine', compact(
             'materis', 
-            'listPelajaran', 
+            'listMataKuliah', 
+            'listDosen',
             'listTahun'
         ));
     }
@@ -59,8 +63,9 @@ class MateriController extends Controller
      */
     public function create()
     {
-        // Tidak perlu melempar data Master Mata Kuliah lagi karena sekarang input teks bebas
-        return view('pages.user.materi.create');
+        // Mengirimkan daftar Mata Kuliah beserta Dosen yang mengampunya (dosen_mata_kuliah)
+        $listMataKuliah = MataKuliah::with('dosens')->get();
+        return view('pages.user.materi.create', compact('listMataKuliah'));
     }
 
     /**
@@ -68,11 +73,12 @@ class MateriController extends Controller
      */
     public function store(Request $request)
     {
-        // Defensive Validation: Memastikan pelajaran dan judul diisi dengan benar
+        // Defensive Validation: Memastikan mata kuliah, dosen, dan judul diisi dengan benar
         $validated = $request->validate([
-            'pelajaran'    => ['required', 'string', 'max:255'],
-            'judul_materi' => ['required', 'string', 'max:255'],
-            'file_materi'  => ['required', 'file', 'mimes:pdf,docx,txt', 'max:20480'],
+            'mata_kuliah_id' => ['required', 'exists:mata_kuliahs,id'],
+            'dosen_id'       => ['required', 'exists:users,id'],
+            'judul_materi'   => ['required', 'string', 'max:255'],
+            'file_materi'    => ['required', 'file', 'mimes:pdf,docx,txt', 'max:20480'],
         ]);
 
         $file = $request->file('file_materi');
@@ -85,12 +91,13 @@ class MateriController extends Controller
         $path = $file->storeAs('materi', $fileName, 'public');
 
         Materi::create([
-            'pelajaran'    => $validated['pelajaran'],
-            'judul_materi' => $validated['judul_materi'],
-            'file_path'    => $path,
-            'tahun'        => now()->year,
-            'user_id'      => Auth::id(),
-            'deskripsi'    => $request->deskripsi,
+            'mata_kuliah_id' => $validated['mata_kuliah_id'],
+            'dosen_id'       => $validated['dosen_id'],
+            'judul_materi'   => $validated['judul_materi'],
+            'file_path'      => $path,
+            'tahun'          => now()->year,
+            'user_id'        => Auth::id(),
+            'deskripsi'      => $request->deskripsi,
         ]);
 
         return redirect('/student/materi/saya')
@@ -102,16 +109,21 @@ class MateriController extends Controller
      */
     public function cari(Request $request)
     {
-        $query = Materi::query()->with('user');
+        $query = Materi::query()->with(['mataKuliah', 'dosen', 'user']);
 
         // Search berdasarkan Judul Materi
         if ($request->filled('cari')) {
             $query->where('judul_materi', 'like', '%' . $request->cari . '%');
         }
 
-        // Filter berdasarkan Pelajaran (Teks kustom)
-        if ($request->filled('pelajaran')) {
-            $query->where('pelajaran', $request->pelajaran);
+        // Filter berdasarkan Mata Kuliah
+        if ($request->filled('mata_kuliah_id')) {
+            $query->where('mata_kuliah_id', $request->mata_kuliah_id);
+        }
+
+        // Filter berdasarkan Dosen
+        if ($request->filled('dosen_id')) {
+            $query->where('dosen_id', $request->dosen_id);
         }
 
         // Filter berdasarkan Tahun
@@ -121,13 +133,15 @@ class MateriController extends Controller
 
         $materis = $query->latest()->get();
 
-        // Ambil data unik untuk dropdown filter dari apa yang ada di database
-        $listPelajaran = Materi::select('pelajaran')->distinct()->pluck('pelajaran');
+        // Ambil data unik untuk dropdown filter dari database
+        $listMataKuliah = MataKuliah::all();
+        $listDosen = User::where('role', 'dosen')->get();
         $listTahun = Materi::select('tahun')->distinct()->pluck('tahun');
 
         return view('pages.user.materi.index', compact(
             'materis',
-            'listPelajaran',
+            'listMataKuliah',
+            'listDosen',
             'listTahun'
         ));
     }

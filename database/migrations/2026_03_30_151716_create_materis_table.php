@@ -14,10 +14,8 @@ return new class extends Migration
     Schema::create('materis', function (Blueprint $table) {
         $table->id();
         
-        // Mengganti mata_kuliah_id menjadi string pelajaran agar inputan bebas (custom)
-        $table->string('pelajaran'); 
-        
-        // dosen_id dihapus karena sifatnya sudah global tanpa dosen pengampu
+        $table->foreignId('mata_kuliah_id')->constrained('mata_kuliahs')->onDelete('cascade');
+        $table->foreignId('dosen_id')->constrained('users')->onDelete('cascade');
 
         $table->string('judul_materi');
         $table->text('deskripsi')->nullable();
