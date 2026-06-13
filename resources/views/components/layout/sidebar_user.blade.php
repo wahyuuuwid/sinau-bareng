@@ -55,19 +55,10 @@
     </nav>
 
     <div class="mt-auto">
-        <a href="{{ route('student.profile') }}" 
-   class="flex items-center gap-4 py-4 px-10 transition {{ request()->routeIs('student.profile') ? 'bg-[#6155F5] text-[#FFD700] rounded-2xl shadow-lg' : 'hover:bg-indigo-500 hover:text-white' }}">
-    
-    <svg class="h-6 w-6 {{ request()->routeIs('student.profile') ? 'text-[#FFD700]' : '' }}" 
-         fill="none" 
-         stroke="currentColor" 
-         viewBox="0 0 24 24"
-         stroke-width="2.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-    </svg>
-    
-    <span class="font-bold">Profile</span>
-</a>
+        <a href="{{ route('profile.index') }}" class="flex items-center gap-4 py-4 px-10 hover:bg-indigo-500 transition {{ request()->is('student/profile') ? 'bg-[#4f46e5]/50 text-yellow-400 font-bold' : 'hover:bg-indigo-500/50' }}">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span>Profile</span>
+        </a>
         
         <button type="button" @click="showLogoutModal = true" class="flex items-center gap-4 py-4 px-10 text-gray-800 bg-white font-bold w-full hover:bg-gray-100 transition">
             <svg class="h-6 w-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
