@@ -2,35 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Materi extends Model
 {
-    use HasFactory;
-
-    protected $table = 'materis';
-
-    // Atribut fillable yang sudah bersih dari 'dosen'
     protected $fillable = [
-        'user_id',
-        'mata_kuliah',
-        'judul',
-        'deskripsi',
-        'file_path',
-        'tipe_file',
-        'rating',   
+        'mata_kuliah_id',
+        'dosen_id',
+        'judul_materi', 
+        'deskripsi', 
+        'file_path', 
+        'tahun', 
+        'status', 
+        'user_id'
     ];
 
-    // Relasi ke tabel pengguna (Pengunggah)
-    public function user()
+    // Relasi ke mata kuliah
+    public function mataKuliah()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(MataKuliah::class, 'mata_kuliah_id');
     }
 
-    // RELASI RATING YANG SEBELUMNYA HILANG KITA KEMBALIKAN DI SINI
+    // Relasi ke dosen pengampu
+    public function dosen()
+    {
+        return $this->belongsTo(User::class, 'dosen_id');
+    }
+
+    // Relasi ke mahasiswa/admin yang UPLOAD materi ini (Tetap Pertahankan)
+    public function user() 
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Relasi ke ratings (Tetap Pertahankan)
     public function ratings()
     {
-        return $this->hasMany(Rating::class, 'materi_id');
+        return $this->hasMany(Rating::class);
     }
 }

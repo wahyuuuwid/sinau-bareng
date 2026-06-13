@@ -11,65 +11,44 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        
-        // Langsung arahkan ke view mahasiswa
-        return view('pages.user.profile', compact('user'));
+        $layout = Auth::user()->role == 'dosen' ? 'components.layout.app_dosen' : 'components.layout.app_user';
+
+        return view('pages.user.profile', compact('layout'));
     }
 
-    // FUNGSI UNTUK MEMPROSES PEMBARUAN PROFIL
     public function update(Request $request)
     {
-        $user = Auth::user();
-
         $request->validate([
             'username' => 'required|string|max:255',
-            // Mengecek agar email unik, tapi abaikan email milik user ini sendiri
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id, 
+            'email'    => 'required|string|email|max:255|unique:users,email,' . auth()->id(),
         ]);
 
+        $user = User::findOrFail(auth()->id());
         $user->update([
             'username' => $request->username,
-            'email' => $request->email,
+            'email'    => $request->email,
         ]);
 
-        return back()->with('success', 'Profil Anda berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Profil Anda berhasil diperbarui!');
     }
 
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'current_password' => 'required|current_password', // Cek kecocokan password lama
-            'password' => 'required|string|min:8|confirmed',   // Minimal 8 char & wajib konfirmasi
+            'current_password' => 'required',
+            'new_password'     => 'required|string|min:6|confirmed',
         ]);
 
-        $user = Auth::user();
-        
+        $user = User::findOrFail(Auth::id());
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->with('error', 'Password lama tidak sesuai.');
+        }
+
         $user->update([
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($request->new_password)
         ]);
 
         return back()->with('success', 'Password berhasil diubah!');
-    }
-
-    public function updateName(Request $request) { /* kode lama Anda */ }
-    public function updateEmail(Request $request) { /* kode lama Anda */ }
-    
-    public function deleteAccount()
-    {
-        $user = Auth::user(); // Ambil data user yang sedang login
-
-        // Proses Logout agar sesinya dibersihkan
-        Auth::logout();
-
-        // Hapus akun dari database
-        $user->delete();
-
-        // Bersihkan token keamanan sesi
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        // Tendang kembali ke halaman login dengan pesan
-        return redirect()->route('login')->with('success', 'Akun Anda telah berhasil dihapus permanen dari sistem.');
     }
 }
