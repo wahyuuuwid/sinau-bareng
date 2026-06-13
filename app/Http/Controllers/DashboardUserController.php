@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Materi;
+use App\Models\Rating;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class DashboardUserController extends Controller
 {
@@ -12,27 +13,34 @@ class DashboardUserController extends Controller
     {
         $userId = Auth::id();
 
-        // 1. Statistik Personal
+        // 1. Total Materi yang diupload user ini
         $totalMateri = Materi::where('user_id', $userId)->count();
-        $averageRating = round(Materi::where('user_id', $userId)->avg('rating'), 1) ?: 0;
 
-        // 2. Materi Populer (Trending 30 hari terakhir)
-        $materiPopuler = Materi::with('user')
-            ->where('created_at', '>=', Carbon::now()->subDays(30))
-            ->orderByDesc('rating')
-            ->take(4)
+        // 2. Rata-rata Penilaian materi milik user ini (dari orang lain)
+        $averageRating = Rating::whereIn('materi_id', function($q) use ($userId) {
+            $q->select('id')->from('materis')->where('user_id', $userId);
+        })->avg('nilai');
+
+        $averageRating = round($averageRating, 1);
+
+        // 3. Materi Terbaru milik user ini
+        $materiTerbaru = Materi::where('user_id', $userId)
+            ->latest()
+            ->take(5)
             ->get();
 
-        return view('pages.user.dashboard', compact('totalMateri', 'averageRating', 'materiPopuler'));
-    }
+        // 4. Materi Populer Minggu Ini (Prioritas Rating, lalu Views)
+        $materiPopuler = Materi::withAvg('ratings', 'nilai')
+            ->orderByDesc('ratings_avg_nilai') // Rating dulu
+            // ->orderByDesc('views')             // Baru views
+            ->take(5)
+            ->get();
 
-    public function mine()
-    {
-    // Mengambil materi milik user yang sedang login [cite: 24]
-    $materis = Materi::where('user_id', Auth::id())->latest()->get();
-
-    // PERBAIKAN: Sesuaikan titik (.) dengan struktur folder kamu
-    // user.materi.mine -> resources/views/user/materi/mine.blade.php
-    return view('pages.user.materi.mine', compact('materis'));  
+        return view('pages.user.dashboard', compact(
+            'totalMateri', 
+            'averageRating', 
+            'materiTerbaru', 
+            'materiPopuler'
+        ));
     }
 }
