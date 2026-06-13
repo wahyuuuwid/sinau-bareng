@@ -154,36 +154,6 @@
                 </div>
             </div>
         </section>
-        <section id="tentang" class="py-20 bg-gray-50 dark:bg-gray-800">
-    <div class="container mx-auto px-6 md:px-12">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">
-                Tentang Sinau Bareng
-            </h2>
-            <div class="w-16 h-1 bg-blue-600 mx-auto rounded"></div>
-        </div>
-
-        <div class="flex flex-col md:flex-row items-center gap-10">
-            <div class="md:w-1/2">
-                <img src="{{ asset('images/LogoTentang.png') }}" alt="Ilustrasi Sinau Bareng" class="w-full max-w-md mx-auto rounded-xl shadow-lg transform hover:-translate-y-2 transition duration-300">
-            </div>
-
-            <div class="md:w-1/2 text-gray-600 dark:text-gray-300 space-y-5">
-                <p class="text-lg leading-relaxed">
-                    <strong>Sinau Bareng</strong> adalah platform manajemen pembelajaran interaktif yang dirancang untuk menjembatani mahasiswa dan dosen dalam satu ekosistem belajar yang efisien.
-                </p>
-                <p class="text-lg leading-relaxed">
-                    Kami menyediakan kemudahan dalam membagikan, mengakses, dan memvalidasi materi perkuliahan. Dilengkapi dengan sistem rating untuk memastikan kualitas materi yang dibagikan selalu relevan dan mudah dipahami.
-                </p>
-                <div class="pt-4">
-                    <a href="#fitur" class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-md transition duration-300 ease-in-out">
-                        Jelajahi Fitur Kami
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
     </main>
 
     <x-layout.footer />
