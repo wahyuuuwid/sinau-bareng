@@ -18,10 +18,26 @@
 
                 <div class="h-5 w-px bg-slate-200 mx-2"></div>
 
-                <a href="/auth/login" class="text-slate-700 hover:text-[#6155F5] transition-colors duration-200">Masuk</a>
-                <a href="/auth/register" class="bg-[#6155F5] text-white px-5 py-2.5 rounded-xl hover:bg-[#4f44d8] transition-all duration-300 shadow-md shadow-[#6155F5]/10 transform active:scale-95">
-                    Daftar Gratis
-                </a>
+              @auth
+    <div class="flex items-center gap-3">
+        <a href="/student/dashboard" class="flex items-center gap-2">
+            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->username) }}&background=6155F5&color=fff" class="w-10 h-10 rounded-full shadow-sm border border-indigo-100">
+            <span class="text-slate-700">
+                {{ auth()->user()->username }}
+            </span>
+        </a>
+    </div>
+@else
+    <a href="/auth/login"
+       class="text-slate-700 hover:text-[#6155F5] transition-colors duration-200">
+        Masuk
+    </a>
+
+    <a href="/auth/register"
+       class="bg-[#6155F5] text-white px-5 py-2.5 rounded-xl hover:bg-[#4f44d8] transition-all duration-300 shadow-md shadow-[#6155F5]/10 transform active:scale-95">
+        Daftar Gratis
+    </a>
+@endauth
             </div>
 
             {{-- MOBILE MENU BUTTON --}}
