@@ -36,7 +36,7 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name(
 // ==========================================
 // 2. AUTHENTICATED ROUTES (Harus Login)
 // ==========================================
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'nocache'])->group(function () {
 
     // LOGOUT ACTION
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
