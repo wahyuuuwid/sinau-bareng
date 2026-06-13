@@ -11,11 +11,8 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        // PERBAIKAN DI SINI: Mengarah ke 'app_dosen' / 'app_user', BUKAN 'sidebar'
         $layout = Auth::user()->role == 'dosen' ? 'components.layout.app_dosen' : 'components.layout.app_user';
-        
-        // Pastikan nama file view-nya sesuai dengan yang kamu miliki
-        // (contoh: 'pages.profile' atau 'pages.user.profile')
+
         return view('pages.user.profile', compact('layout'));
     }
 
@@ -26,7 +23,7 @@ class ProfileController extends Controller
             'email'    => 'required|string|email|max:255|unique:users,email,' . auth()->id(),
         ]);
 
-        $user = auth()->user();
+        $user = User::findOrFail(auth()->id());
         $user->update([
             'username' => $request->username,
             'email'    => $request->email,
@@ -42,11 +39,13 @@ class ProfileController extends Controller
             'new_password'     => 'required|string|min:6|confirmed',
         ]);
 
-        if (!Hash::check($request->current_password, Auth::user()->password)) {
+        $user = User::findOrFail(Auth::id());
+
+        if (!Hash::check($request->current_password, $user->password)) {
             return back()->with('error', 'Password lama tidak sesuai.');
         }
 
-        Auth::user()->update([
+        $user->update([
             'password' => Hash::make($request->new_password)
         ]);
 
