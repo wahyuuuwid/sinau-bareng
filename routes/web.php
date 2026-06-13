@@ -2,13 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MateriController;
 use App\Http\Controllers\DashboardUserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DosenController;
+use App\Http\Controllers\MateriController;
+use App\Http\Controllers\AIController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\AIController;
-use App\Http\Controllers\DosenController;
-use App\Http\Controllers\ProfileController;
 
 // ==========================================
 // 1. GUEST ROUTES (Tanpa Login)

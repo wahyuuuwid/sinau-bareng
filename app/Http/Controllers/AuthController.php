@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-    class AuthController extends Controller
-    {
-
+class AuthController extends Controller
+{
     public function loginForm()
     {
         return view('pages.auth.login');
@@ -26,12 +25,13 @@ use Illuminate\Support\Facades\Auth;
             $request->session()->regenerate();
             $user = Auth::user();
 
+            // PERBAIKAN: Diarahkan ke '/.../dashboard' sesuai enkapsulasi
             if ($user->role == 'admin') {
-                return redirect('/admin');
+                return redirect('/admin/dashboard'); 
             }
 
             if ($user->role == 'dosen') {
-                return redirect('/dosen');
+                return redirect('/dosen/dashboard');
             }
 
             return redirect('/student/dashboard');
@@ -66,6 +66,4 @@ use Illuminate\Support\Facades\Auth;
 
         return redirect('/auth/login');
     }
-
-    
 }
