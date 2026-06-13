@@ -11,22 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('materis', function (Blueprint $table) {
+    Schema::create('materis', function (Blueprint $table) {
         $table->id();
-        //$table->string('mata_kuliah');
-
+        
         $table->foreignId('mata_kuliah_id')->constrained('mata_kuliahs')->onDelete('cascade');
-        $table->foreignId('dosen_id')->constrained('users')->onDelete('cascade'); // Dosen pengampu
+        $table->foreignId('dosen_id')->constrained('users')->onDelete('cascade');
 
         $table->string('judul_materi');
         $table->text('deskripsi')->nullable();
-        $table->string('file_path'); // Lokasi file di folder storage
+        $table->string('file_path'); 
         $table->string('tahun');
         $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-        $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Biar tau ini materi punya siapa
+        $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
         
         $table->timestamps();
-
     });
     }
 

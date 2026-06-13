@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Materi extends Model
 {
     protected $fillable = [
-        'mata_kuliah_id', 
-        'dosen_id',       
+        'mata_kuliah_id',
+        'dosen_id',
         'judul_materi', 
         'deskripsi', 
         'file_path', 
@@ -17,27 +17,27 @@ class Materi extends Model
         'user_id'
     ];
 
-    // Relasi ke mahasiswa/admin yang UPLOAD materi ini
+    // Relasi ke mata kuliah
+    public function mataKuliah()
+    {
+        return $this->belongsTo(MataKuliah::class, 'mata_kuliah_id');
+    }
+
+    // Relasi ke dosen pengampu
+    public function dosen()
+    {
+        return $this->belongsTo(User::class, 'dosen_id');
+    }
+
+    // Relasi ke mahasiswa/admin yang UPLOAD materi ini (Tetap Pertahankan)
     public function user() 
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relasi ke dosen PENGAMPU materi ini
-    public function dosen() 
-    {
-        // Kita kasih tau Laravel: "Dosen itu ngambil dari tabel users, tapi kuncinya dosen_id ya!"
-        return $this->belongsTo(User::class, 'dosen_id');
-    }
-
-    // Relasi ke Mata Kuliah
-    public function mataKuliah()
-    {
-        return $this->belongsTo(MataKuliah::class);
-    }
-
+    // Relasi ke ratings (Tetap Pertahankan)
     public function ratings()
-{
-    return $this->hasMany(Rating::class);
-}
+    {
+        return $this->hasMany(Rating::class);
+    }
 }

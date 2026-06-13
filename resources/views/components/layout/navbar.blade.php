@@ -1,57 +1,47 @@
-<header class="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-300 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-2">
-        <div class="flex items-center justify-between h-16 mx-3 md:mx-0">
+<header class="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
 
-            <div class="flex items-center gap-16">
-                <a href="/" class="inline-flex items-center">
-                    <img src="{{ asset('images/logo.png') }}" alt="Sinau Bareng Logo" class="h-12 w-auto mr-2" />
+            {{-- LOGO AREA --}}
+            <div class="flex items-center">
+                <a href="#hero" class="inline-flex items-center">
+                    <img src="{{ asset('logo.png') }}" alt="Sinau Bareng Logo" class="h-10 w-auto" />
                 </a>
             </div>
 
-            <!-- <div class="hidden md:flex flex-1 max-w-md mx-8">
-                <div class="relative w-full text-indigo-600">
-                    <input 
-                        type="text" 
-                        placeholder="Cari soal atau materi..." 
-                        class="w-full px-4 py-2 pl-10 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
-                    />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-indigo-600 text-white px-3 py-1 rounded-md text-sm hover:bg-indigo-700 transition">
-                        Cari
-                    </button>
-                </div>
-            </div> -->
+            {{-- DESKTOP MENU: SMOOTH SCROLL INTERNAL --}}
+            <div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-600">
+                <a href="#hero" class="hover:text-[#6155F5] transition-colors duration-200">Utama</a>
+                <a href="#fitur" class="hover:text-[#6155F5] transition-colors duration-200">Fitur Layanan</a>
+                <a href="#alur" class="hover:text-[#6155F5] transition-colors duration-200">Cara Kerja</a>
+                <a href="#statistik" class="hover:text-[#6155F5] transition-colors duration-200">Keunggulan</a>
 
-            <div class="hidden md:flex items-center gap-4 text-indigo-600">
-                <div class="relative group">
-                    <!-- <button class="flex items-center gap-1 text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">
-                        <span>Explore</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">Bank Soal</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">Materi</a>
-                    </div> -->
-                </div>
+                <div class="h-5 w-px bg-slate-200 mx-2"></div>
 
-                <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Beranda</a>
-                <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Ai Tools</a>
-                <a href="#tentang" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Tentang</a>
-                <a href="#" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Kontak</a>
+              @auth
+    <div class="flex items-center gap-3">
+        <a href="/student/dashboard" class="flex items-center gap-2">
+            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->username) }}&background=6155F5&color=fff" class="w-10 h-10 rounded-full shadow-sm border border-indigo-100">
+            <span class="text-slate-700">
+                {{ auth()->user()->username }}
+            </span>
+        </a>
+    </div>
+@else
+    <a href="/auth/login"
+       class="text-slate-700 hover:text-[#6155F5] transition-colors duration-200">
+        Masuk
+    </a>
 
-                <div class="h-6 w-px bg-gray-300 mx-2"></div>
-
-                <a href="/auth/login" class="text-gray-700 hover:text-indigo-600 transition px-3 py-2 font-medium">Masuk</a>
-                <a href="/auth/register" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-medium">
-                    Daftar Gratis
-                </a>
+    <a href="/auth/register"
+       class="bg-[#6155F5] text-white px-5 py-2.5 rounded-xl hover:bg-[#4f44d8] transition-all duration-300 shadow-md shadow-[#6155F5]/10 transform active:scale-95">
+        Daftar Gratis
+    </a>
+@endauth
             </div>
 
-            <button id="menu-btn" class="md:hidden flex items-center text-gray-700">
+            {{-- MOBILE MENU BUTTON --}}
+            <button id="menu-btn" class="md:hidden flex items-center text-slate-700 focus:outline-none p-2 rounded-lg hover:bg-slate-50">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
@@ -60,20 +50,38 @@
         </div>
     </div>
 
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-300">
-        <div class="px-6 py-4 space-y-4">
-            <a href="/auth/login" class="block w-full text-center border border-indigo-600 text-indigo-600 px-4 py-3 rounded-lg font-medium">Masuk</a>
-            <a href="/auth/register" class="block w-full text-center bg-indigo-600 text-white px-4 py-3 rounded-lg font-medium">Daftar Gratis</a>
+    {{-- MOBILE MENU DROPDOWN --}}
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 shadow-lg animate-modal-enter">
+        <div class="px-6 py-6 space-y-4 flex flex-col text-left font-bold text-slate-600">
+            <a href="#hero" class="mobile-link hover:text-[#6155F5] py-2 border-b border-slate-50">Utama</a>
+            <a href="#fitur" class="mobile-link hover:text-[#6155F5] py-2 border-b border-slate-50">Fitur Layanan</a>
+            <a href="#alur" class="mobile-link hover:text-[#6155F5] py-2 border-b border-slate-50">Cara Kerja</a>
+            <a href="#statistik" class="mobile-link hover:text-[#6155F5] py-2">Keunggulan</a>
+            
+            <div class="pt-4 grid grid-cols-2 gap-4">
+                <a href="/auth/login" class="text-center border-2 border-slate-200 text-slate-700 px-4 py-3 rounded-xl font-bold">Masuk</a>
+                <a href="/auth/register" class="text-center bg-[#6155F5] text-white px-4 py-3 rounded-xl font-bold shadow-md shadow-[#6155F5]/10">Daftar</a>
+            </div>
         </div>
     </div>
 </header>
 
 <script>
-    // Script sederhana untuk buka/tutup menu di HP
-    const btn = document.getElementById("menu-btn");
-    const menu = document.getElementById("mobile-menu");
+    document.addEventListener("DOMContentLoaded", function() {
+        const btn = document.getElementById("menu-btn");
+        const menu = document.getElementById("mobile-menu");
+        const mobileLinks = document.querySelectorAll(".mobile-link");
 
-    btn?.addEventListener("click", () => {
-        menu?.classList.toggle("hidden");
+        // Toggle mobile menu
+        btn?.addEventListener("click", () => {
+            menu?.classList.toggle("hidden");
+        });
+
+        // Close mobile menu pas ngeklik link internal smooth scroll
+        mobileLinks.forEach(link => {
+            link.addEventListener("click", () => {
+                menu?.classList.add("hidden");
+            });
+        });
     });
 </script>
