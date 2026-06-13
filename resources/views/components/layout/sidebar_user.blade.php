@@ -1,6 +1,7 @@
 <div class="bg-[#6366f1] w-64 flex flex-col min-h-screen fixed top-0 text-white z-40" x-data="{ openMateri: {{ request()->is('student/materi*') ? 'true' : 'false' }}, showLogoutModal: false }">
-    <a href="/" class="p-10 font-bold text-2xl tracking-widest uppercase">
-        Logo
+    <a href="/" class="p-10 font-bold text-sm flex items-center gap-2 tracking-widest uppercase">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10" />
+        Sinau Bareng
     </a>
 
     <div class="px-8 mb-4 text-xs font-bold text-indigo-200 uppercase tracking-widest">

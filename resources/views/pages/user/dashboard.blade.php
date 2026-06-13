@@ -1,5 +1,6 @@
 <x-layout.app_user title="Dashboard Mahasiswa" class="bg-[#E5E5E5]">
     <main>
+        
         {{-- Header Section --}}
         <div class="flex justify-between items-start mb-10">
             <div>
