@@ -1,40 +1,37 @@
-@props(['title'])
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'Sinau Bareng' }}</title>
+@props(['title' => 'Sinau Bareng'])
+
+<x-layout.app :title="$title">
     
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
 
-    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    {{-- Pembungkus layar penuh, mencegah scroll ganda --}}
+    <div class="flex h-screen bg-[#ECECEC] overflow-hidden">
+        
+        {{-- SIDEBAR: Tetap di kiri --}}
+        <x-layout.sidebar_user /> 
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="font-sans antialiased bg-gray-50">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
-    
-   <div {{ $attributes->merge(['class' => 'bg-[#E5E5E5]']) }}>
-    <div class="flex min-h-screen">
-        <div class="w-64"></div>
+        {{-- KONTEN SEBELAH KANAN (Navbar + Main Content) --}}
+        {{-- min-w-0 sangat penting agar konten panjang tidak merusak layout --}}
+        <div class="flex-1 flex flex-col min-w-0 relative">
+            
+            {{-- NAVBAR: Ditumpuk di paling atas --}}
+            <div class="z-20 w-full relative">
+                <x-layout.navbar_user /> 
+            </div>
 
-        <!-- Sidebar -->
-        <x-layout.sidebar_user />
+            {{-- AREA KONTEN UTAMA: Bebas di-scroll --}}
+            <main class="flex-1 overflow-y-auto min-h-0 bg-[#ECECEC] pt-[24px]">
+                
+                {{-- Pembatas lebar agar rapi dan tidak melenceng --}}
+                <div class="px-8 w-full max-w-7xl mx-auto pb-[40px]">
+                    {{ $slot }}
+                </div>
+                
+            </main>
 
-        <!-- Content -->
-        <main class="flex-1 p-12">
-            {{ $slot ?? '' }}
-        </main>
-
+        </div>
     </div>
-</div>
-
-    @yield('content')
-
-    @stack('scripts')
-</body>
-</html>
+</x-layout.app>
