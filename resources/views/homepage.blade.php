@@ -39,7 +39,7 @@
                     </p>
                     
                     <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="/register" class="bg-[#6155F5] text-white px-8 py-4 rounded-2xl hover:bg-[#4f44d8] hover:shadow-indigo-500/30 transition-all duration-300 font-bold text-lg shadow-xl shadow-[#6155F5]/20 text-center transform active:scale-95">
+                        <a href="/auth/register" class="bg-[#6155F5] text-white px-8 py-4 rounded-2xl hover:bg-[#4f44d8] hover:shadow-indigo-500/30 transition-all duration-300 font-bold text-lg shadow-xl shadow-[#6155F5]/20 text-center transform active:scale-95">
                             Mulai Belajar Sekarang
                         </a>
                         <a href="#fitur" class="bg-white border-2 border-slate-200 text-slate-700 px-8 py-4 rounded-2xl hover:border-[#6155F5] hover:text-[#6155F5] transition-all duration-300 font-bold text-lg text-center shadow-sm transform active:scale-95 flex items-center justify-center gap-2">

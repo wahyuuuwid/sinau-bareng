@@ -18,9 +18,20 @@
 
                 <div class="h-5 w-px bg-slate-200 mx-2"></div>
 
+
               @auth
+              @php
+$user = auth()->user();
+
+$dashboardUrl = match($user->role) {
+    'student' => url('/student/dashboard'),
+    'admin'   => url('/admin/dashboard'),
+    'dosen'   => url('/dosen/dashboard'),
+    default   => url('/dashboard'),
+};
+@endphp
     <div class="flex items-center gap-3">
-        <a href="/student/dashboard" class="flex items-center gap-2">
+        <a href="{{ $dashboardUrl }}" class="flex items-center gap-2">
             <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->username) }}&background=6155F5&color=fff" class="w-10 h-10 rounded-full shadow-sm border border-indigo-100">
             <span class="text-slate-700">
                 {{ auth()->user()->username }}
