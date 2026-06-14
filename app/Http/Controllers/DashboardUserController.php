@@ -30,11 +30,11 @@ class DashboardUserController extends Controller
             ->get();
 
         // 4. Materi Populer Minggu Ini (Prioritas Rating, lalu Views)
-        $materiPopuler = Materi::withAvg('ratings', 'nilai')
+        $materiPopuler = Materi::where('status', 'approved')->withAvg('ratings', 'nilai')
             ->orderByDesc('ratings_avg_nilai') // Rating dulu
-            // ->orderByDesc('views')             // Baru views
             ->take(5)
             ->get();
+            
 
         return view('pages.user.dashboard', compact(
             'totalMateri', 

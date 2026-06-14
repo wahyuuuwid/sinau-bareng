@@ -108,43 +108,46 @@ class MateriController extends Controller
      * Search + Filter semua materi (Halaman Utama)
      */
     public function cari(Request $request)
-    {
-        $query = Materi::query()->with(['mataKuliah', 'dosen', 'user']);
+{
+    $query = Materi::query()
+        ->with(['mataKuliah', 'dosen', 'user'])
+        ->where('user_id', '!=', Auth::id())
+        ->where('status', 'approved');
 
-        // Search berdasarkan Judul Materi
-        if ($request->filled('cari')) {
-            $query->where('judul_materi', 'like', '%' . $request->cari . '%');
-        }
-
-        // Filter berdasarkan Mata Kuliah
-        if ($request->filled('mata_kuliah_id')) {
-            $query->where('mata_kuliah_id', $request->mata_kuliah_id);
-        }
-
-        // Filter berdasarkan Dosen
-        if ($request->filled('dosen_id')) {
-            $query->where('dosen_id', $request->dosen_id);
-        }
-
-        // Filter berdasarkan Tahun
-        if ($request->filled('tahun')) {
-            $query->where('tahun', $request->tahun);
-        }
-
-        $materis = $query->latest()->get();
-
-        // Ambil data unik untuk dropdown filter dari database
-        $listMataKuliah = MataKuliah::all();
-        $listDosen = User::where('role', 'dosen')->get();
-        $listTahun = Materi::select('tahun')->distinct()->pluck('tahun');
-
-        return view('pages.user.materi.index', compact(
-            'materis',
-            'listMataKuliah',
-            'listDosen',
-            'listTahun'
-        ));
+        
+    // Search berdasarkan Judul Materi
+    if ($request->filled('cari')) {
+        $query->where('judul_materi', 'like', '%' . $request->cari . '%');
     }
+
+    // Filter berdasarkan Mata Kuliah
+    if ($request->filled('mata_kuliah_id')) {
+        $query->where('mata_kuliah_id', $request->mata_kuliah_id);
+    }
+
+    // Filter berdasarkan Dosen
+    if ($request->filled('dosen_id')) {
+        $query->where('dosen_id', $request->dosen_id);
+    }
+
+    // Filter berdasarkan Tahun
+    if ($request->filled('tahun')) {
+        $query->where('tahun', $request->tahun);
+    }
+
+    $materis = $query->latest()->get();
+
+    $listMataKuliah = MataKuliah::all();
+    $listDosen = User::where('role', 'dosen')->get();
+    $listTahun = Materi::select('tahun')->distinct()->pluck('tahun');
+
+    return view('pages.user.materi.index', compact(
+        'materis',
+        'listMataKuliah',
+        'listDosen',
+        'listTahun'
+    ));
+}
 
     /**
      * Rating Materi
