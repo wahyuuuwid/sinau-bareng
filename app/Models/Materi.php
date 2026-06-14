@@ -40,4 +40,10 @@ class Materi extends Model
     {
         return $this->hasMany(Rating::class);
     }
+
+    // Relasi ke komentar (Tetap Pertahankan)
+    public function komentars()
+    {
+        return $this->hasMany(Komentar::class)->latest(); // latest() agar komentar terbaru di atas
+    }
 }

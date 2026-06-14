@@ -10,6 +10,7 @@ use App\Http\Controllers\AIController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\KomentarController;
 
 // ==========================================
 // 1. GUEST ROUTES (Tanpa Login)
@@ -61,6 +62,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             Route::post('/unggah', [MateriController::class, 'store'])->name('store');
             Route::post('/rate/{id}', [MateriController::class, 'rate'])->name('rate'); // Rating masuk modul materi
             Route::post('/report/{id}', [MateriController::class, 'report'])->name('report');
+            Route::post('/materi/{materi_id}/komentar', [KomentarController::class, 'store'])->name('komentar.store');
         });
 
         // Fitur Generate Soal AI
@@ -81,7 +83,6 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         
         // Kelola Pengguna
         Route::get('/kelola-pengguna', [AdminController::class, 'manageUsers'])->name('admin.users');
-        Route::post('/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
         Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
         Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
         Route::post('/users/store', [AdminController::class, 'storeUser'])->name('admin.users.store');
@@ -104,9 +105,11 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
     // ROLE: DOSEN
     Route::middleware(['role:dosen'])->prefix('dosen')->name('dosen.')->group(function () {
-        Route::get('/', [DosenController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DosenController::class, 'index'])->name('dashboard');
         Route::get('/validasi-materi', [DosenController::class, 'validasiMateri'])->name('validasi');
-        Route::get('/materi/{id}', [DosenController::class, 'showMateri'])->name('materi.show');
-        Route::patch('/materi/{id}/update', [DosenController::class, 'updateStatus'])->name('materi.update');
+        Route::get('/validasi-materi/{id}', [DosenController::class, 'showMateri'])->name('materi.show');
+        Route::patch('/validasi-materi/{id}/update', [DosenController::class, 'updateStatus'])->name('materi.update');
     });
+
+    
 });

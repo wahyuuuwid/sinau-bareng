@@ -5,15 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Notification extends Model
+class Komentar extends Model
 {
     use HasFactory;
 
-    // Pastikan baris ini ada agar data bisa diisi
-    protected $guarded = ['id']; 
+    protected $guarded = ['id'];
 
+    // Komentar ini milik siapa?
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Komentar ini ada di materi apa?
+    public function materi()
+    {
+        return $this->belongsTo(Materi::class);
     }
 }

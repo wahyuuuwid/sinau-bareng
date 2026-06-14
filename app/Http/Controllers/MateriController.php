@@ -119,7 +119,7 @@ class MateriController extends Controller
 {
     $query = Materi::query()
         ->with(['mataKuliah', 'dosen', 'user'])
-        ->where('user_id', '!=', Auth::id())
+        // ->where('user_id', '!=', Auth::id())
         ->where('status', 'approved');
 
         
