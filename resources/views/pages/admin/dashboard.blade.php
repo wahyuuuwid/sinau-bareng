@@ -1,18 +1,16 @@
-<x-layout.app title="Admin Dashboard">
+<x-layout.app_admin title="Admin Dashboard">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@400;500&family=Roboto:wght@400&display=swap');
     </style>
 
-    <div class="min-h-screen bg-[#ECECEC] font-['Poppins'] text-[#000000] flex w-full overflow-x-hidden">
+    <div class="bg-[#ECECEC] font-['Poppins'] text-[#000000] flex w-full overflow-x-hidden">
 
-        <x-layout.sidebar_admin />
 
-        <main class="flex-1 relative pt-[32px] px-[24px] pb-[40px] min-w-0 flex flex-col">
+        <main class="flex-1 relative  px-[24px] pb-[40px] min-w-0 flex flex-col">
             
-            <x-layout.navbar_admin />
 
-            <div class="mt-[32px] w-full flex flex-col flex-1">
+            <div class="mt-[12px] w-full flex flex-col flex-1">
                 
                 <h1 class="text-[22px] leading-[30px] font-semibold text-[#000000] mb-[20px]">Dashboard</h1>
 
@@ -68,8 +66,7 @@
                     </div>
 
                     <div class="lg:col-span-8 flex flex-col gap-[24px]">
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-[24px]">
+                        <!-- <div class="grid grid-cols-1 sm:grid-cols-2 gap-[24px]">
                             
                             <div class="h-[240px] bg-[#FFFFFF] border border-[#D7D7D7] rounded-[16px] p-[20px] relative flex flex-col items-center justify-center shadow-sm">
                                 <h3 class="text-[15px] font-semibold text-[#000000] absolute left-[20px] top-[16px]">Distribusi Jenis Konten</h3>
@@ -95,7 +92,8 @@
                                     <div class="flex items-center gap-[6px]"><span class="w-[10px] h-[10px] rounded-[3px] bg-[#3CC3DF]"></span> Batal</div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
+                        
 
                         <div class="w-full flex-1 min-h-[280px] bg-[#FFFFFF] border border-[#D7D7D7] rounded-[16px] p-[24px] relative shadow-sm flex flex-col">
                             <h3 class="text-[15px] font-semibold text-[#000000] mb-[20px]">Jumlah Upload Konten per Bulan</h3>
@@ -154,4 +152,4 @@
             </div>
         </main>
     </div>
-</x-layout.app>
+</x-layout.app_>

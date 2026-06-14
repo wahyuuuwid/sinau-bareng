@@ -79,19 +79,20 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         
         // Kelola Pengguna
-        Route::get('/users', [AdminController::class, 'manageUsers'])->name('admin.users');
+        Route::get('/kelola-pengguna', [AdminController::class, 'manageUsers'])->name('admin.users');
         Route::post('/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
         Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
         Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
         Route::post('/users/store', [AdminController::class, 'storeUser'])->name('admin.users.store');
 
         // Manajemen Laporan
-        Route::get('/laporan', [AdminController::class, 'manageLaporan'])->name('admin.laporan');
+        Route::get('/manajemen-laporan', [AdminController::class, 'manageLaporan'])->name('admin.laporan');
         Route::post('/laporan/{id}/ignore', [AdminController::class, 'ignoreReport'])->name('admin.laporan.ignore');
         Route::delete('/laporan/{id}/delete', [AdminController::class, 'deleteReportedMateri'])->name('admin.laporan.delete');
 
         // Moderasi Konten (BARU)
-        Route::get('/moderation', [AdminController::class, 'manageModeration'])->name('admin.moderation');
+        Route::get('/moderasi-konten', [AdminController::class, 'manageModeration'])->name('admin.moderation');
+        Route::put('/materi/{id}/update', [AdminController::class, 'updateMateri'])->name('admin.materi.update');
         Route::delete('/moderation/{id}/delete', [AdminController::class, 'deleteContent'])->name('admin.moderation.delete');
 
         //PROFIL ADMIN
