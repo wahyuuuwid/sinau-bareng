@@ -34,6 +34,7 @@ class DashboardUserController extends Controller
             ->orderByDesc('ratings_avg_nilai') // Rating dulu
             ->take(5)
             ->get();
+            
 
         return view('pages.user.dashboard', compact(
             'totalMateri', 
