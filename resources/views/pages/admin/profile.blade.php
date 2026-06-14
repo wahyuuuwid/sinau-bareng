@@ -1,4 +1,4 @@
-<x-layout.app title="Profil Admin">
+<x-layout.app_admin title="Profil Admin">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap');
@@ -6,13 +6,9 @@
 
     <div class="min-h-screen bg-[#ECECEC] font-['Poppins'] text-[#000000] flex w-full overflow-x-hidden">
         
-        <x-layout.sidebar_admin />
-
         <main class="flex-1 relative pt-[32px] px-[24px] pb-[40px] min-w-0 flex flex-col">
             
-            <x-layout.navbar_admin />
-
-            <div class="mt-[32px] w-full flex flex-col flex-1 max-w-4xl">
+            <div class="w-full flex flex-col flex-1 max-w-4xl">
                 
                 <div class="mb-[24px]">
                     <h1 class="text-[22px] leading-[30px] font-semibold text-[#000000]">Pengaturan Profil</h1>
@@ -125,4 +121,4 @@
             </div>
         </main>
     </div>
-</x-layout.app>
+</x-layout.app_admin>

@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Materi;
 use App\Models\Laporan;
+use App\Models\Notification;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -31,14 +34,14 @@ class AdminController extends Controller
 
         // 2. AKTIVITAS TERBARU (Real-time)
         $activities = collect();
-        Materi::latest()->take(3)->get()->each(function($m) use ($activities) {
+        Materi::latest()->take(2)->get()->each(function($m) use ($activities) {
             $activities->push((object)[
                 'pesan' => 'Materi baru: "' . Str::limit($m->judul, 20) . '"',
                 'waktu' => $m->created_at->diffForHumans(),
                 'waktu_asli' => $m->created_at
             ]);
         });
-        User::latest()->take(3)->get()->each(function($u) use ($activities) {
+        User::latest()->take(2)->get()->each(function($u) use ($activities) {
             $activities->push((object)[
                 'pesan' => 'User baru: ' . $u->username,
                 'waktu' => $u->created_at->diffForHumans(),
@@ -68,9 +71,21 @@ class AdminController extends Controller
         $maxUpload = max($monthlyUploads) > 0 ? max($monthlyUploads) : 10;
         $chartHeights = array_map(fn($val) => ($val / $maxUpload) * 100, $monthlyUploads);
 
+        $notifications = Auth::user()
+    ->notifications()
+    ->latest()
+    ->take(5)
+    ->get();
+
+$unreadCount = Auth::user()
+    ->notifications()
+    ->where('is_read', false)
+    ->count();
+
         return view('pages.admin.dashboard', compact(
             'totalPengguna', 'totalMateri', 'totalLaporan', 
-            'aktivitasTerbaru', 'pieDistribusi', 'chartHeights'
+            'aktivitasTerbaru', 'pieDistribusi', 'chartHeights',
+            'notifications','unreadCount'
         ));
     }
 
@@ -104,13 +119,32 @@ class AdminController extends Controller
     {
     // Mengambil semua materi yang statusnya 'pending' atau semua materi untuk moderasi
     // Sesuaikan 'Materi' dengan nama Model Anda
-    $kontens = \App\Models\Materi::latest()->get(); 
+    $kontens = Materi::latest()->paginate(5);
     
     // Mendefinisikan variabel totalKonten agar tidak error lagi
     $totalKonten = $kontens->count();
 
     return view('pages.admin.moderation', compact('kontens', 'totalKonten'));
     }
+    
+    public function updateMateri(Request $request, $id)
+{
+    $request->validate([
+        'judul_materi' => 'required|string|max:255',
+        'deskripsi'    => 'nullable|string',
+        'status'       => 'required|in:pending,approved,rejected',
+    ]);
+
+    $konten = Materi::findOrFail($id);
+
+    $konten->update([
+        'judul_materi' => $request->judul_materi,
+        'deskripsi'    => $request->deskripsi,
+        'status'       => $request->status,
+    ]);
+
+    return redirect()->back()->with('success', 'Konten berhasil diperbarui');
+}
 
     public function manageLaporan()
     {
@@ -178,10 +212,57 @@ class AdminController extends Controller
     }
 
     // ... (Fungsi lain biarkan utuh: manageUsers, storeUser, manageLaporan, manageModeration, dll) ...
-    public function manageUsers() { $users = User::latest()->get(); $totalUsers = User::count(); return view('pages.admin.users', compact('users', 'totalUsers')); }
-    public function updateUser(Request $request, $id) { /* kode sama */ return back(); }
-    public function deleteUser($id) { /* kode sama */ return back(); }
+   public function manageUsers()
+{
+    $users = User::where('role', '!=', 'admin')
+        ->latest()
+        ->paginate(5);
+
+    $totalUsers = User::where('role', '!=', 'admin')->count();
+
+    return view('pages.admin.users', compact('users', 'totalUsers'));
+}
+    public function updateUser(Request $request, $id)
+{
+    $request->validate([
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $id,
+        'role' => 'required',
+    ]);
+
+    $user = User::findOrFail($id);
+
+    $user->username = $request->username;
+    $user->email = $request->email;
+    $user->role = $request->role;
+
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+    }
+
+    $user->save();
+
+    return back()->with('success', 'Pengguna berhasil diperbarui');
+}
+
+    public function deleteUser($id)
+{
+    $user = User::findOrFail($id);
+
+    $user->delete();
+
+    return back()->with('success', 'Pengguna berhasil dihapus');
+}
     public function ignoreReport($id) { return back(); }
     
-    public function deleteContent($id) { return back(); }
+    public function deleteContent($id)
+{
+    $konten = Materi::findOrFail($id);
+
+    Storage::delete($konten->file_path);
+
+    $konten->delete();
+
+    return back()->with('success', 'Konten berhasil dihapus.');
+}
 }

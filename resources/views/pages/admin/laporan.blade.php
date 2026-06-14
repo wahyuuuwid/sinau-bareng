@@ -1,4 +1,4 @@
-<x-layout.app title="Manajemen Laporan - Sinau Admin">
+<x-layout.app_admin title="Manajemen Laporan - Sinau Admin">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@400;500;600;700&display=swap');
@@ -13,23 +13,16 @@
         }
     </style>
 
-    <div class="min-h-screen bg-[#ECECEC] font(['Poppins']) text-[#000000] flex w-full overflow-x-hidden">
-
-        <x-layout.sidebar_admin />
+    <div class=" bg-[#ECECEC] font(['Poppins']) text-[#000000] flex w-full overflow-x-hidden">
 
         <main class="flex-1 relative pt-[32px] px-[24px] pb-[40px] min-w-0 flex flex-col">
             
-            <x-layout.navbar_admin />
-
-            <div class="mt-[32px] w-full flex flex-col flex-1">
+            <div class=" w-full flex flex-col flex-1">
                 
                 {{-- HEADER AREA --}}
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-[24px] gap-4">
                     <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="w-2 h-2 bg-[#6155F5] rounded-full animate-pulse"></span>
-                            <span class="text-[12px] font-bold text-[#6155F5] uppercase tracking-widest">Moderation System</span>
-                        </div>
+                        
                         <h1 class="text-[26px] leading-[34px] font-bold text-[#000000]">Manajemen Laporan</h1>
                         <p class="text-[14px] text-gray-500 font-medium">Tinjau laporan dan amankan komunitas dari konten bermasalah.</p>
                     </div>
@@ -149,18 +142,10 @@
                         </table>
                     </div>
 
-                    {{-- TABLE FOOTER --}}
-                    <div class="px-[24px] py-[18px] bg-white border-t border-gray-100 flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                            <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Sistem Stabil</span>
-                        </div>
-                        <p class="text-[12px] font-medium text-gray-400 font-['Inter']">Sinau Admin &bull; Moderation V.1.2</p>
-                    </div>
 
                 </div>
 
             </div>
         </main>
     </div>
-</x-layout.app>
+</x-layout.app_admin>
