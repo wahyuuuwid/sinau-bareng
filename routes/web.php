@@ -43,7 +43,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // INDUK PREFIX: /student (Semua yang berbau mahasiswa kumpul di sini)
-    Route::prefix('student')->group(function () {
+    Route::middleware(['role:user'])->prefix('student')->group(function () {
         
         // Profil Mahasiswa
         Route::prefix('profile')->name('profile.')->group(function () {
@@ -60,6 +60,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             Route::get('/unggah', [MateriController::class, 'create'])->name('create');
             Route::post('/unggah', [MateriController::class, 'store'])->name('store');
             Route::post('/rate/{id}', [MateriController::class, 'rate'])->name('rate'); // Rating masuk modul materi
+            Route::post('/report/{id}', [MateriController::class, 'report'])->name('report');
         });
 
         // Fitur Generate Soal AI

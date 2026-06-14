@@ -6,6 +6,8 @@ use App\Models\Materi;
 use App\Models\User;
 use App\Models\Rating;
 use App\Models\MataKuliah;
+use App\Models\Notification;
+use App\Models\Laporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -100,6 +102,12 @@ class MateriController extends Controller
             'deskripsi'      => $request->deskripsi,
         ]);
 
+        Notification::create([
+    'user_id' => Auth::id(),
+    'title' => 'Materi Baru',
+    'message' => "Materi \"{$validated['judul_materi']}\" berhasil ditambahkan."
+]);
+
         return redirect('/student/materi/saya')
             ->with('success', 'Materi berhasil diunggah!');
     }
@@ -169,4 +177,23 @@ class MateriController extends Controller
 
     return back()->with('success', 'Terima kasih atas penilaiannya!');
 }
+
+   public function report(Request $request, $materiId)
+   {
+        $request->validate([
+            'alasan' => 'required|string|max:1000'
+        ]);
+
+        Laporan::updateOrCreate(
+    [
+        'user_id' => Auth::id(),
+        'materi_id' => $materiId,
+    ],
+    [
+        'alasan' => $request->alasan,
+    ]
+);
+
+        return back()->with('success', 'Laporan berhasil dikirim!');
+    }
 }

@@ -246,20 +246,51 @@
                         </div>
 
                         {{-- MODAL LAPORAN --}}
-                        <div id="modal-report-{{ $materi->id }}" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                            <div class="bg-white rounded-[40px] w-full max-w-md overflow-hidden shadow-2xl p-10 text-center animate-modal-enter">
-                                <svg class="w-16 h-16 text-red-500 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                </svg>
-                                <h3 class="text-2xl font-black text-gray-800">Laporkan Materi?</h3>
-                                <p class="text-gray-400 text-sm mt-2 font-medium px-4">Bantu kami menjaga kualitas materi di Sinau Bareng.</p>
-                                <textarea class="w-full mt-6 p-5 bg-gray-50 border border-gray-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-red-500 transition-all" rows="3" placeholder="Jelaskan alasan pelaporan secara singkat..."></textarea>
-                                <div class="grid grid-cols-2 gap-4 mt-8">
-                                    <button onclick="closeModal('modal-report-{{ $materi->id }}')" class="py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">Batal</button>
-                                    <button class="py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-100 hover:bg-red-700 transition-all">Kirim Laporan</button>
-                                </div>
-                            </div>
-                        </div>
+                        <form method="POST" action="{{ route('materi.report', $materi->id) }}">
+    @csrf
+
+    <div id="modal-report-{{ $materi->id }}" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+
+        <div class="bg-white rounded-[40px] w-full max-w-md overflow-hidden shadow-2xl p-10 text-center animate-modal-enter">
+
+            <svg class="w-16 h-16 text-red-500 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+
+            <h3 class="text-2xl font-black text-gray-800">Laporkan Materi?</h3>
+
+            <p class="text-gray-400 text-sm mt-2 font-medium px-4">
+                Bantu kami menjaga kualitas materi di Sinau Bareng.
+            </p>
+
+            {{-- INPUT ALASAN LAPOR --}}
+            <textarea
+                name="alasan"
+                required
+                class="w-full mt-6 p-5 bg-gray-50 border border-gray-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                rows="3"
+                placeholder="Jelaskan alasan pelaporan secara singkat..."></textarea>
+
+            <div class="grid grid-cols-2 gap-4 mt-8">
+
+                <button type="button"
+                    onclick="closeModal('modal-report-{{ $materi->id }}')"
+                    class="py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">
+                    Batal
+                </button>
+
+                <button type="submit"
+                    class="py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-100 hover:bg-red-700 transition-all">
+                    Kirim Laporan
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</form>
                     @empty
                         <tr><td colspan="7" class="py-16 text-gray-400 italic font-medium">Yah, materi tidak ditemukan. Coba kata kunci lain?</td></tr>
                     @endforelse
