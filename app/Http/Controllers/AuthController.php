@@ -25,12 +25,12 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
-            // PERBAIKAN: Diarahkan ke '/.../dashboard' sesuai enkapsulasi
             if ($user->role == 'admin') {
                 return redirect('/admin/dashboard'); 
             }
 
             if ($user->role == 'dosen') {
+                // PERBAIKAN: Diarahkan ke '/dosen' sesuai dengan prefix di web.php
                 return redirect('/dosen/dashboard');
             }
 

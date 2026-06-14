@@ -1,13 +1,20 @@
 <x-layout.app_user title="Dashboard Mahasiswa" class="bg-[#E5E5E5]">
     <main>
         
-        {{-- Header Section --}}
-        <div class="flex justify-between items-start mb-10">
-            <div>
-                <h1 class="text-2xl font-medium text-gray-800">Dashboard</h1>
-                <h2 class="text-3xl font-bold text-black mt-2">Selamat Datang, {{ Auth::user()->username }}! 👋</h2>
-            </div>
-        </div>
+        {{-- NAVBAR DENGAN SAPAAN SEJAJAR LONCENG --}}
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        </style>
+
+        <main>
+            
+            {{-- NAVBAR DENGAN SAPAAN SEJAJAR LONCENG --}}
+            <x-layout.navbar_user>
+                {{-- 2. GUNAKAN STYLE INLINE UNTUK MEMAKSA FONT POPPINS --}}
+                <h1 class="text-[30px] leading-[30px] font-semibold text-[#000000]" style="font-family: 'Poppins', sans-serif;">
+                    Selamat datang, {{ Auth::user()->username }} 👋
+                </h1>
+            </x-layout.navbar_user>
 
         {{-- Section: Materi Populer (Prioritas Rating & Views) --}}
         <div class="bg-white p-10 rounded-[30px] shadow-sm mb-10 border border-gray-100">
