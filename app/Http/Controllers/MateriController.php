@@ -114,6 +114,7 @@ class MateriController extends Controller
         ->where('user_id', '!=', Auth::id())
         ->where('status', 'approved');
 
+        
     // Search berdasarkan Judul Materi
     if ($request->filled('cari')) {
         $query->where('judul_materi', 'like', '%' . $request->cari . '%');
