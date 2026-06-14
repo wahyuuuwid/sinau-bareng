@@ -14,12 +14,67 @@
 
     <div class="flex items-center gap-[24px]">
         {{-- Notification DNA --}}
-        <button class="relative text-[#666666] hover:text-[#6155F5] transition-colors p-2">
-            <svg class="w-[24px] h-[24px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-            </svg>
-            <span class="absolute top-[6px] right-[8px] w-[8px] h-[8px] bg-red-500 rounded-full border-2 border-white"></span>
-        </button>
+       <div x-data="{ open: false }" class="relative">
+
+    <button
+        @click="open = !open"
+        class="relative text-[#666666] hover:text-[#6155F5] transition-colors p-2"
+    >
+        <svg class="w-[24px] h-[24px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+            </path>
+        </svg>
+
+        @if($unreadCount > 0)
+            <span
+                class="absolute top-[6px] right-[8px] min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
+                {{ $unreadCount }}
+            </span>
+        @endif
+    </button>
+
+    <style>
+    [x-cloak] {
+        display: none !important;
+    }
+</style>
+
+    <div
+        x-show="open"
+        @click.away="open = false"
+         x-cloak
+        x-transition
+        class="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-xl border z-50"
+    >
+        <div class="p-4 border-b">
+            <h3 class="font-semibold">Notifikasi</h3>
+        </div>
+
+        <div class="max-h-96 overflow-y-auto">
+            @forelse($notifications as $notification)
+                <div class="p-4 border-b hover:bg-gray-50">
+                    <p class="font-medium text-sm">
+                        {{ $notification->title }}
+                    </p>
+
+                    <p class="text-xs text-gray-500 mt-1">
+                        {{ $notification->message }}
+                    </p>
+
+                    <p class="text-[11px] text-gray-400 mt-2">
+                        {{ $notification->created_at->diffForHumans() }}
+                    </p>
+                </div>
+            @empty
+                <div class="p-4 text-center text-gray-500">
+                    Belum ada notifikasi
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+</div>
 
         {{-- Profile Card DNA --}}
         <a href="{{ route('admin.profile') }}" class="flex items-center gap-[12px] bg-[#6155F5] hover:bg-[#5246e5] cursor-pointer transition-colors rounded-[24px] py-[6px] pl-[20px] pr-[6px] shadow-md">
